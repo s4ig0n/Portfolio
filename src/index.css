@@ -4,12 +4,118 @@
   padding: 0;
 }
 
+:root {
+  --matrix-bright: #00ff41;
+  --matrix-mid: #00b300;
+  --matrix-dim: #007a00;
+  --matrix-dark: #003b00;
+  --matrix-glow: rgba(0, 255, 65, 0.15);
+  --glass-bg: rgba(0, 20, 0, 0.45);
+  --glass-bg-hover: rgba(0, 30, 0, 0.6);
+  --glass-border: rgba(0, 255, 65, 0.25);
+  --glass-border-hover: rgba(0, 255, 65, 0.55);
+  --glass-blur: blur(14px) saturate(160%);
+  --glass-shadow: 0 4px 32px rgba(0, 255, 65, 0.08), 0 1.5px 8px rgba(0,0,0,0.5);
+  --glass-shadow-hover: 0 8px 40px rgba(0, 255, 65, 0.18), 0 2px 12px rgba(0,0,0,0.6);
+  --text-primary: #00ff41;
+  --text-secondary: #00b300;
+  --text-muted: #007a00;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
+  background-color: #020f02;
+  color: var(--text-primary);
 }
 
 #root {
   width: 100%;
+}
+
+/* ── Glass utility class ─────────────────────────────────────── */
+/* Apply .glass to any card / button / box you want glassed */
+.glass,
+.card,
+button,
+.btn,
+[class*="skill"],
+[class*="experience"],
+[class*="project"],
+[class*="contact"],
+[class*="box"],
+[class*="tag"],
+[class*="badge"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 14px !important;
+  box-shadow: var(--glass-shadow) !important;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease !important;
+}
+
+.glass:hover,
+.card:hover,
+button:hover,
+.btn:hover,
+[class*="skill"]:hover,
+[class*="experience"]:hover,
+[class*="project"]:hover,
+[class*="contact"]:hover,
+[class*="box"]:hover,
+[class*="tag"]:hover,
+[class*="badge"]:hover {
+  background: var(--glass-bg-hover) !important;
+  border-color: var(--glass-border-hover) !important;
+  box-shadow: var(--glass-shadow-hover) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Glass inner highlight — 3D top-edge sheen */
+.glass::before,
+.card::before,
+button::before,
+[class*="skill"]::before,
+[class*="experience"]::before,
+[class*="project"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    160deg,
+    rgba(0, 255, 65, 0.08) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+/* Make sure elements with ::before are positioned */
+.card,
+button,
+[class*="skill"],
+[class*="experience"],
+[class*="project"] {
+  position: relative;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #020f02; }
+::-webkit-scrollbar-thumb {
+  background: var(--matrix-dark);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--matrix-dim); }
+
+/* ── Text selection ──────────────────────────────────────────── */
+::selection {
+  background: rgba(0, 255, 65, 0.25);
+  color: var(--matrix-bright);
 }
