@@ -49,12 +49,29 @@ const M = {
   glassBgHov:  "rgba(0,30,0,0.60)",
   glassBdr:    "rgba(0,255,65,0.25)",
   glassBdrHov: "rgba(0,255,65,0.55)",
-  blur:        "blur(14px) saturate(160%)",
-  shadow:      "0 4px 32px rgba(0,255,65,0.08), 0 1.5px 8px rgba(0,0,0,0.5)",
-  shadowHov:   "0 8px 40px rgba(0,255,65,0.18), 0 2px 12px rgba(0,0,0,0.6)",
   bg:          "#020f02",
   textSec:     "#00b300",
 };
+
+const liquidBlur = "blur(22px) saturate(180%) brightness(1.08)";
+
+const shadowRest = `
+  0 0 0 0.5px rgba(0,255,65,0.18),
+  0 2px 0 0 rgba(0,255,65,0.12) inset,
+  0 -1px 0 0 rgba(0,0,0,0.5) inset,
+  0 8px 32px rgba(0,0,0,0.55),
+  0 2px 8px rgba(0,0,0,0.4),
+  0 0 40px rgba(0,255,65,0.06)
+`;
+
+const shadowHover = `
+  0 0 0 0.5px rgba(0,255,65,0.4),
+  0 2px 0 0 rgba(0,255,65,0.22) inset,
+  0 -1px 0 0 rgba(0,0,0,0.5) inset,
+  0 20px 60px rgba(0,0,0,0.6),
+  0 8px 24px rgba(0,0,0,0.5),
+  0 0 60px rgba(0,255,65,0.14)
+`;
 
 function useIntersection(ref, threshold = 0.15) {
   const [visible, setVisible] = useState(false);
@@ -120,24 +137,87 @@ function Card({ children, style = {} }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        background:          hovered ? M.glassBgHov : M.glassBg,
-        backdropFilter:      M.blur,
-        WebkitBackdropFilter: M.blur,
-        border:              `1px solid ${hovered ? M.glassBdrHov : M.glassBdr}`,
-        borderRadius:        "16px",
-        padding:             "28px",
-        transition:          "all 0.3s ease",
-        transform:           hovered ? "translateY(-4px)" : "none",
-        boxShadow:           hovered ? M.shadowHov : M.shadow,
-        position:            "relative",
-        overflow:            "hidden",
+        background: "rgba(0,28,0,0.38)",
+        backdropFilter: liquidBlur,
+        WebkitBackdropFilter: liquidBlur,
+        borderRadius: "18px",
+        position: "relative",
+        overflow: "hidden",
+        padding: "28px",
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        boxShadow: hovered ? shadowHover : shadowRest,
+        transform: hovered ? "translateY(-5px) scale(1.012)" : "translateY(0) scale(1)",
         ...style,
       }}
     >
-      {/* Apple-style top-edge glass sheen */}
+      {/* Specular top-edge highlight */}
       <div style={{
-        position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none",
-        background: "linear-gradient(160deg, rgba(0,255,65,0.07) 0%, transparent 55%)",
+        position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
+        background: `linear-gradient(170deg, rgba(0,255,65,${hovered ? "0.22" : "0.16"}) 0%, rgba(0,255,65,0.05) 20%, transparent 48%)`,
+        transition: "background 0.3s ease",
+      }} />
+      {/* Bottom lens curve */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "45%",
+        borderRadius: "0 0 18px 18px", pointerEvents: "none", zIndex: 0,
+        background: "linear-gradient(to top, rgba(0,0,0,0.28), transparent)",
+      }} />
+      {/* Scanline texture */}
+      <div style={{
+        position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
+        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.015) 2px, rgba(0,255,65,0.015) 3px)",
+        opacity: 0.6,
+      }} />
+      <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
+    </div>
+  );
+}
+
+// Reusable liquid glass feature card (used for Dean's List etc.)
+function FeatureCard({ children }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderRadius: "20px", padding: "40px",
+        background: "rgba(0,28,0,0.38)",
+        backdropFilter: liquidBlur,
+        WebkitBackdropFilter: liquidBlur,
+        boxShadow: hovered ? shadowHover : shadowRest,
+        transform: hovered ? "translateY(-4px)" : "none",
+        transition: "box-shadow 0.3s ease, transform 0.3s ease",
+        marginBottom: "20px", position: "relative", overflow: "hidden",
+      }}
+    >
+      {/* Specular highlight */}
+      <div style={{
+        position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
+        background: `linear-gradient(170deg, rgba(0,255,65,${hovered ? "0.22" : "0.16"}) 0%, rgba(0,255,65,0.05) 20%, transparent 48%)`,
+        transition: "background 0.3s ease",
+      }} />
+      {/* Bottom lens curve */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "45%",
+        borderRadius: "0 0 20px 20px", pointerEvents: "none", zIndex: 0,
+        background: "linear-gradient(to top, rgba(0,0,0,0.28), transparent)",
+      }} />
+      {/* Scanlines */}
+      <div style={{
+        position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
+        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,65,0.015) 2px, rgba(0,255,65,0.015) 3px)",
+        opacity: 0.6,
+      }} />
+      {/* Decorative rings */}
+      <div style={{
+        position: "absolute", right: -60, top: -60, width: 220, height: 220,
+        borderRadius: "50%", border: "1px solid rgba(0,255,65,0.15)",
+        animation: "spin-slow 20s linear infinite", zIndex: 0,
+      }} />
+      <div style={{
+        position: "absolute", right: -30, top: -30, width: 140, height: 140,
+        borderRadius: "50%", border: "1px solid rgba(0,179,0,0.12)", zIndex: 0,
       }} />
       <div style={{ position: "relative", zIndex: 1 }}>{children}</div>
     </div>
@@ -208,18 +288,21 @@ export default function Portfolio() {
           border-radius: 999px;
           font-size: 11px;
           font-family: 'Space Mono', monospace;
-          background: rgba(0,255,65,0.08);
-          border: 1px solid rgba(0,255,65,0.25);
+          background: rgba(0,255,65,0.07);
+          border: 0.5px solid rgba(0,255,65,0.28);
           color: #00b300;
           margin: 3px;
-          backdrop-filter: blur(8px);
-          -webkit-backdrop-filter: blur(8px);
-          transition: background 0.2s, border-color 0.2s, color 0.2s;
+          backdrop-filter: blur(12px) saturate(150%);
+          -webkit-backdrop-filter: blur(12px) saturate(150%);
+          box-shadow: 0 1px 0 0 rgba(0,255,65,0.14) inset, 0 1px 4px rgba(0,0,0,0.35);
+          transition: all 0.2s;
         }
         .tag:hover {
-          background: rgba(0,255,65,0.15);
+          background: rgba(0,255,65,0.13);
           border-color: rgba(0,255,65,0.5);
           color: #00ff41;
+          box-shadow: 0 1px 0 0 rgba(0,255,65,0.22) inset, 0 2px 10px rgba(0,0,0,0.4), 0 0 14px rgba(0,255,65,0.1);
+          transform: translateY(-1px);
         }
 
         .nav-link {
@@ -236,6 +319,7 @@ export default function Portfolio() {
         .nav-link:hover, .nav-link.active {
           color: #00ff41;
           background: rgba(0,255,65,0.08);
+          box-shadow: 0 1px 0 0 rgba(0,255,65,0.15) inset, 0 1px 8px rgba(0,0,0,0.3);
         }
 
         .section { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
@@ -267,11 +351,12 @@ export default function Portfolio() {
         backgroundSize: "60px 60px",
       }} />
 
-      {/* NAV */}
+      {/* NAV — transparent until scrolled, then glass */}
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         background: scrolled ? "rgba(2,15,2,0.85)" : "transparent",
-        backdropFilter: scrolled ? "blur(16px)" : "none",
+        backdropFilter: scrolled ? liquidBlur : "none",
+        WebkitBackdropFilter: scrolled ? liquidBlur : "none",
         borderBottom: scrolled ? "1px solid rgba(0,255,65,0.12)" : "none",
         transition: "all 0.3s ease",
         padding: "16px 32px",
@@ -316,25 +401,26 @@ export default function Portfolio() {
             <button onClick={() => scrollTo("projects")} style={{
               padding: "14px 32px", borderRadius: "12px", border: `1px solid ${M.mid}`, cursor: "pointer",
               background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
-              backdropFilter: M.blur, WebkitBackdropFilter: M.blur,
+              backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
               color: M.bright, fontWeight: 700, fontSize: "14px", fontFamily: "'Space Mono', monospace",
               letterSpacing: "0.5px", transition: "all 0.2s",
-              boxShadow: "0 0 20px rgba(0,255,65,0.15)",
+              boxShadow: "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
             }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,255,65,0.35)"; e.currentTarget.style.borderColor = M.bright; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 20px rgba(0,255,65,0.15)"; e.currentTarget.style.borderColor = M.mid; }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
             >
               View Work →
             </button>
             <a href="mailto:neerajk2@uwm.edu" style={{
               padding: "14px 32px", borderRadius: "12px", cursor: "pointer",
               border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-              backdropFilter: M.blur, WebkitBackdropFilter: M.blur,
+              backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
               color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
               transition: "all 0.2s", display: "inline-block",
+              boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; }}
-              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; }}
+              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
             >
               Contact
             </a>
@@ -352,7 +438,6 @@ export default function Portfolio() {
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
-
           <div className="grid-2">
             <FadeIn delay={0.1}>
               <Card>
@@ -390,7 +475,6 @@ export default function Portfolio() {
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
-
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {EXPERIENCES.map((exp, i) => (
               <FadeIn key={exp.title} delay={i * 0.1}>
@@ -430,28 +514,18 @@ export default function Portfolio() {
             </div>
           </FadeIn>
 
+          {/* Dean's List — liquid glass FeatureCard */}
           <FadeIn delay={0.1}>
-            <div style={{
-              borderRadius: "20px", padding: "40px",
-              background: "linear-gradient(135deg, rgba(0,255,65,0.06) 0%, rgba(0,100,0,0.08) 100%)",
-              backdropFilter: M.blur, WebkitBackdropFilter: M.blur,
-              border: "1px solid rgba(0,255,65,0.2)", boxShadow: M.shadow,
-              marginBottom: "20px", position: "relative", overflow: "hidden",
-            }}>
-              <div style={{ position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", background: "linear-gradient(160deg, rgba(0,255,65,0.07) 0%, transparent 55%)" }} />
-              <div style={{ position: "absolute", right: -60, top: -60, width: 220, height: 220, borderRadius: "50%", border: "1px solid rgba(0,255,65,0.15)", animation: "spin-slow 20s linear infinite" }} />
-              <div style={{ position: "absolute", right: -30, top: -30, width: 140, height: 140, borderRadius: "50%", border: "1px solid rgba(0,179,0,0.12)" }} />
-              <div style={{ position: "relative", zIndex: 1 }}>
-                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🏆 ISRO · 2021 · NATIONAL</div>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>Space Habitat Award</h3>
-                <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px", marginBottom: "16px" }}>
-                  Designed a secondary habitat for humans on Gliese 667 cc — selected as the most Earth-like planet. Placed <strong style={{ color: M.bright }}>3rd out of 240+ national teams</strong>.
-                </p>
-                <span className="tag">Astrophysics Research</span>
-                <span className="tag">Report Writing</span>
-                <span className="tag">Team Collaboration</span>
-              </div>
-            </div>
+            <FeatureCard>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🏅 UWM · 2023–Present</div>
+              <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>Dean's List Student</h3>
+              <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px", marginBottom: "16px" }}>
+                Consistent academic excellence over fulltime coursework — <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher.</strong>
+              </p>
+              <span className="tag">Academic Excellence</span>
+              <span className="tag">Full-time Student</span>
+              <span className="tag">UWM Honors</span>
+            </FeatureCard>
           </FadeIn>
 
           <div className="grid-2">
@@ -484,26 +558,27 @@ export default function Portfolio() {
               <a href="mailto:neerajk2@uwm.edu" style={{
                 padding: "14px 32px", borderRadius: "12px",
                 background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
-                backdropFilter: M.blur, WebkitBackdropFilter: M.blur,
+                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
                 border: `1px solid ${M.mid}`, color: M.bright,
                 fontWeight: 700, fontSize: "14px", fontFamily: "'Space Mono', monospace",
                 transition: "all 0.2s", display: "inline-block",
-                boxShadow: "0 0 20px rgba(0,255,65,0.15)",
+                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
               }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 32px rgba(0,255,65,0.35)"; e.currentTarget.style.borderColor = M.bright; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 20px rgba(0,255,65,0.15)"; e.currentTarget.style.borderColor = M.mid; }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
               >
                 neerajk2@uwm.edu
               </a>
               <a href="https://www.linkedin.com/in/gourilakshmineerajkumar" target="_blank" rel="noopener noreferrer" style={{
                 padding: "14px 32px", borderRadius: "12px",
                 border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-                backdropFilter: M.blur, WebkitBackdropFilter: M.blur,
+                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
                 color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
                 transition: "all 0.2s", display: "inline-block",
+                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
               }}
-                onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; }}
-                onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; }}
+                onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+                onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
               >
                 LinkedIn ↗
               </a>
