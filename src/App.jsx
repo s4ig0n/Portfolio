@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const NAV_LINKS = ["about", "skills", "research", "projects", "contact"];
+const NAV_LINKS = ["home", "skills", "experience", "about", "contact"];
 
 const SKILLS = [
   { name: "Python", level: 95 },
@@ -18,7 +18,7 @@ const EXPERIENCES = [
     period: "May 2025 – Present",
     tags: ["Graph Theory", "MATLAB", "Academic Writing", "LaTex"],
     desc: "Researched Truncated Square Graphs with a focus on Total Restricted Broadcast Domination. Analyzed single-vertex broadcasting, eccentricity, and graph connectivity relationships.",
-    icon: "📝",
+    icon: "📊",
   },
   {
     title: "Exhibit Maintenance",
@@ -26,7 +26,7 @@ const EXPERIENCES = [
     period: "Jul 2024 – Sep 2024",
     tags: ["C++", "Python", "Arduino", "Raspberry Pi"],
     desc: "Designed a 3D circuit for the Wimshurst machine using Arduino + relays (C++). Rebuilt the Elements Display using Raspberry Pi (Python) and touch pads for more user interaction.",
-    icon: "⚡",
+    icon: "🤖",
   },
   {
     title: "SURF Recipient – Solar Sculpture Project",
@@ -34,44 +34,45 @@ const EXPERIENCES = [
     period: "Sep 2023 – Aug 2024",
     tags: ["PIC24", "MPLabs", "Embedded Systems", "PICKIT"],
     desc: "Contributed to a Solar Sculpture that harvests sunlight by day and drives visual light performances at night using PIC24 microcontrollers.",
-    icon: "☀",
+    icon: "☀️",
   },
 ];
 
 // ── Matrix palette tokens ──────────────────────────────────────
 const M = {
-  bright:      "#00ff41",
-  mid:         "#00b300",
-  dim:         "#007a00",
-  dark:        "#003b00",
-  glow:        "rgba(0,255,65,0.15)",
-  glassBg:     "rgba(0,20,0,0.45)",
-  glassBgHov:  "rgba(0,30,0,0.60)",
-  glassBdr:    "rgba(0,255,65,0.25)",
-  glassBdrHov: "rgba(0,255,65,0.55)",
-  bg:          "#020f02",
-  textSec:     "#00b300",
+  bright:      "#f5f5f5",
+  mid:         "#c9c9c9",
+  dim:         "#8a8a8a",
+  dark:        "#3a3a3a",
+  glow:        "rgba(255,255,255,0.10)",
+  glassBg:     "rgba(255,255,255,0.045)",
+  glassBgHov:  "rgba(255,255,255,0.08)",
+  glassBdr:    "rgba(255,255,255,0.14)",
+  glassBdrHov: "rgba(255,255,255,0.30)",
+  bg:          "#000000",
+  textSec:     "#b5b5b5",
 };
 
 const liquidBlur = "blur(22px) saturate(180%) brightness(1.08)";
 
 const shadowRest = `
-  0 0 0 0.5px rgba(0,255,65,0.18),
-  0 2px 0 0 rgba(0,255,65,0.12) inset,
+  0 0 0 0.5px rgba(255,255,255,0.14),
+  0 2px 0 0 rgba(255,255,255,0.10) inset,
   0 -1px 0 0 rgba(0,0,0,0.5) inset,
   0 8px 32px rgba(0,0,0,0.55),
   0 2px 8px rgba(0,0,0,0.4),
-  0 0 40px rgba(0,255,65,0.06)
+  0 0 40px rgba(255,255,255,0.04)
 `;
 
 const shadowHover = `
-  0 0 0 0.5px rgba(0,255,65,0.4),
-  0 2px 0 0 rgba(0,255,65,0.22) inset,
+  0 0 0 0.5px rgba(255,255,255,0.3),
+  0 2px 0 0 rgba(255,255,255,0.18) inset,
   0 -1px 0 0 rgba(0,0,0,0.5) inset,
   0 20px 60px rgba(0,0,0,0.6),
   0 8px 24px rgba(0,0,0,0.5),
-  0 0 60px rgba(0,255,65,0.14)
+  0 0 60px rgba(255,255,255,0.10)
 `;
+
 
 function useIntersection(ref, threshold = 0.15) {
   const [visible, setVisible] = useState(false);
@@ -225,7 +226,7 @@ function FeatureCard({ children }) {
 }
 
 export default function Portfolio() {
-  const [activeSection, setActiveSection] = useState("about");
+  const [activeSection, setActiveSection] = useState("home");
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [scrolled, setScrolled] = useState(false);
 
@@ -239,6 +240,26 @@ export default function Portfolio() {
     const onMove = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  // ── ScrollSpy: watches a thin band across the vertical center of the
+  // viewport and marks whichever section is currently crossing it active.
+  useEffect(() => {
+    const sections = NAV_LINKS
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+
+    sections.forEach((s) => observer.observe(s));
+    return () => observer.disconnect();
   }, []);
 
   const scrollTo = (id) => {
@@ -305,21 +326,76 @@ export default function Portfolio() {
           transform: translateY(-1px);
         }
 
-        .nav-link {
-          font-family: 'Space Mono', monospace;
-          font-size: 12px;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-          padding: 8px 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s;
-          color: #007a00;
+        /* ── Sticky vertical ScrollSpy side nav ─────────────────── */
+        
+        .side-nav {
+          position: fixed;
+          top: 50%;
+          right: 32px;
+          transform: translateY(-50%);
+          z-index: 100;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 16px;
         }
-        .nav-link:hover, .nav-link.active {
-          color: #00ff41;
-          background: rgba(0,255,65,0.08);
-          box-shadow: 0 1px 0 0 rgba(0,255,65,0.15) inset, 0 1px 8px rgba(0,0,0,0.3);
+        .side-nav-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+        }
+        .side-nav-label {
+          font-family: 'Space Mono', monospace;
+          letter-spacing: 1.5px;
+          text-transform: uppercase;
+          white-space: nowrap;
+          font-size: 11px;
+          font-weight: 400;
+          color: #6b6b6b;
+          opacity: 0.55;
+          transform: translateX(0);
+          transition: font-size 0.35s cubic-bezier(.4,0,.2,1),
+                      font-weight 0.35s ease,
+                      color 0.35s ease,
+                      opacity 0.35s ease,
+                      transform 0.35s ease;
+        }
+        .side-nav-item:hover .side-nav-label {
+          opacity: 0.85;
+          color: #c9c9c9;
+        }
+        .side-nav-label.active {
+          font-size: 15px;
+          font-weight: 700;
+          color: #f5f5f5;
+          opacity: 1;
+          transform: translateX(-3px);
+        }
+        .side-nav-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #6b6b6b;
+          opacity: 0.5;
+          transition: all 0.35s ease;
+          flex-shrink: 0;
+        }
+        .side-nav-item:hover .side-nav-dot {
+          opacity: 0.85;
+        }
+        .side-nav-dot.active {
+          width: 8px;
+          height: 8px;
+          background: #f5f5f5;
+          opacity: 1;
+          box-shadow: 0 0 0 4px rgba(255,255,255,0.10), 0 0 14px rgba(255,255,255,0.5);
+        }
+        @media (max-width: 900px) {
+          .side-nav { right: 16px; gap: 14px; }
+          .side-nav-label { display: none; }
+          .side-nav-item { gap: 0; }
+          .section { padding-right: 46px; }
         }
 
         .section { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
@@ -351,35 +427,43 @@ export default function Portfolio() {
         backgroundSize: "60px 60px",
       }} />
 
-      {/* NAV — transparent until scrolled, then glass */}
-      <nav style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: scrolled ? "rgba(2,15,2,0.85)" : "transparent",
+      {/* BRAND — small fixed mark, top-left, gains a glass backing once scrolled */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, zIndex: 100,
+        padding: "20px 28px",
+        background: scrolled ? "rgba(22,22,29,0.75)" : "transparent",
         backdropFilter: scrolled ? liquidBlur : "none",
         WebkitBackdropFilter: scrolled ? liquidBlur : "none",
-        borderBottom: scrolled ? "1px solid rgba(0,255,65,0.12)" : "none",
+        borderBottomRightRadius: scrolled ? "14px" : 0,
         transition: "all 0.3s ease",
-        padding: "16px 32px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "14px", color: M.bright, fontWeight: 700 }}>
-          GN<span style={{ animation: "blink 1.2s infinite", display: "inline-block" }}>_</span>
+          GLN<span style={{ animation: "blink 1.2s infinite", display: "inline-block" }}>_</span>
         </span>
-        <div style={{ display: "flex", gap: "4px" }}>
-          {NAV_LINKS.map(l => (
-            <span key={l} className={`nav-link ${activeSection === l ? "active" : ""}`} onClick={() => scrollTo(l)}>{l}</span>
-          ))}
-        </div>
+      </div>
+
+      {/* SIDE NAV — sticky vertical ScrollSpy nav, right edge */}
+      <nav className="side-nav" aria-label="Section navigation">
+        {NAV_LINKS.map((l) => (
+          <div
+            key={l}
+            className="side-nav-item"
+            onClick={() => scrollTo(l)}
+          >
+            <span className={`side-nav-label ${activeSection === l ? "active" : ""}`}>{l}</span>
+            <span className={`side-nav-dot ${activeSection === l ? "active" : ""}`} />
+          </div>
+        ))}
       </nav>
 
       {/* HERO */}
-      <section id="about" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
+      <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
         <div style={{ textAlign: "center", maxWidth: 1000 }}>
           <div style={{ position: "absolute", top: "20%", left: "10%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,255,65,0.12), transparent)", animation: "float 6s ease-in-out infinite", filter: "blur(40px)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: "25%", right: "8%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,0,0.10), transparent)", animation: "float 8s ease-in-out infinite 2s", filter: "blur(50px)", pointerEvents: "none" }} />
 
           <div style={{ opacity: 0.8, fontFamily: "'Space Mono', monospace", fontSize: "12px", letterSpacing: "3px", color: M.mid, marginBottom: "20px", textTransform: "uppercase" }}>
-            <span className="dot" />Junior @ UWM · CS with Honors
+            <span className="dot" />Senior @ UWM · CS with Honors
           </div>
 
           <h1 style={{
@@ -398,7 +482,7 @@ export default function Portfolio() {
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => scrollTo("projects")} style={{
+            <button onClick={() => scrollTo("about")} style={{
               padding: "14px 32px", borderRadius: "12px", border: `1px solid ${M.mid}`, cursor: "pointer",
               background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
               backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
@@ -466,11 +550,11 @@ export default function Portfolio() {
       </section>
 
       {/* RESEARCH */}
-      <section id="research" style={{ position: "relative", zIndex: 1 }}>
+      <section id="experience" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
           <FadeIn>
             <div style={{ marginBottom: "48px" }}>
-              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>03 / research</p>
+              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>03 / experience</p>
               <h2 className="section-title">Experience &<br />Research</h2>
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
@@ -504,12 +588,12 @@ export default function Portfolio() {
       </section>
 
       {/* PROJECTS / AWARDS */}
-      <section id="projects" style={{ position: "relative", zIndex: 1 }}>
+      <section id="about" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
           <FadeIn>
             <div style={{ marginBottom: "48px" }}>
-              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>04 / projects</p>
-              <h2 className="section-title">Awards &<br />Projects</h2>
+              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>04 / about</p>
+              <h2 className="section-title">Projects <br/> & Achievements</h2>
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
@@ -520,11 +604,11 @@ export default function Portfolio() {
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🏅 UWM · 2023–Present</div>
               <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>Dean's List Student</h3>
               <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px", marginBottom: "16px" }}>
-                Consistent academic excellence over fulltime coursework — <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher.</strong>
+                Consistent academic excellence over fulltime coursework — <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher every semester.</strong>
               </p>
-              <span className="tag">Academic Excellence</span>
+              {/* <span className="tag">Academic Excellence</span>
               <span className="tag">Full-time Student</span>
-              <span className="tag">UWM Honors</span>
+              <span className="tag">UWM Honors</span> */}
             </FeatureCard>
           </FadeIn>
 
@@ -552,7 +636,7 @@ export default function Portfolio() {
         <div className="section" style={{ textAlign: "center" }}>
           <FadeIn>
             <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "16px" }}>05 / contact</p>
-            <h2 className="section-title" style={{ marginBottom: "16px" }}>Let's Connect</h2>
+            <h2 className="section-title" style={{ marginBottom: "16px" }}>Intrigued? <br/> Let's Connect</h2>
             <p style={{ color: M.dim, marginBottom: "40px", fontSize: "15px" }}>Open to internships, research, and cool projects.</p>
             <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
               <a href="mailto:neerajk2@uwm.edu" style={{

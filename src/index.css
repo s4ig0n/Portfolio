@@ -5,6 +5,7 @@
 }
 
 :root {
+  --eigengrau: #16161d;
   --matrix-bright: #00ff41;
   --matrix-mid: #00b300;
   --matrix-dim: #007a00;
@@ -26,7 +27,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: #020f02;
+  background-color: var(--eigengrau);
   color: var(--text-primary);
 }
 
