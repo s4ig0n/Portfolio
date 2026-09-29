@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import MatrixCursor from "./MatrixCursor.jsx";
 
 const NAV_LINKS = ["home", "skills", "experience", "about", "contact"];
 
@@ -13,29 +14,54 @@ const SKILLS = [
 
 const EXPERIENCES = [
   {
-    title: "Undergraduate Researcher",
-    org: "Dept. of Mathematical Sciences, UWM",
+    title: "Quality Assurance Intern",
+    org: "Mercury Security – HID Global",
+    period: "May 2026 – Aug 2026",
+    tags: ["MQTT", "Docker", "QEMU", "Jenkins", "TestRail", "Jira", "SonarQube", "Bitbucket","Access Control", "Embedded Linux", "Web UI"],
+    desc: "Built a cross-architecture MQTT file transfer pipeline between an x64 Windows host and an ARM-based MP series Linux controller. Validated 2 release and 2 hotfix targets for access control controllers through TestRail runs on Jenkins builds, resolved Jira bugs across controller firmware and its web configuration interface, and ran compatibility testing across the full lineup of SIOs, readers, and locks.",
+    icon: "🔐",
+  },
+  {
+    title: "Web Developer – Mothers Against Gun Violence",
+    org: "Nonprofit Client Project, Milwaukee · Mentored by Direct Supply",
+    period: "Jan 2026 – May 2026",
+    tags: ["Web Dev", "Branding", "Accessibility", "Donation Plugin", "UI/UX","WordPress"],
+    desc: "Redesigned a Milwaukee nonprofit's website with a four-person team under a new brand identity. Integrated a donation plugin to simplify online giving, and added pages for the founder's story and a map of Milwaukee murals honoring gun violence victims while improving accessibility.",
+    icon: "🌐",
+  },
+  {
+    title: "Undergraduate Researcher – Graph Theory",
+    org: "Dept. of Mathematical Sciences, UWM · MAA, NSF",
     period: "May 2025 – Present",
-    tags: ["Graph Theory", "MATLAB", "Academic Writing", "LaTex"],
-    desc: "Researched Truncated Square Graphs with a focus on Total Restricted Broadcast Domination. Analyzed single-vertex broadcasting, eccentricity, and graph connectivity relationships.",
+    tags: ["Graph Theory", "MATLAB", "Academic Writing", "LaTeX"],
+    desc: "Researching Truncated Square Graphs with a focus on Total Restricted Broadcast Domination, working on questions proposed by J. Cervantes and P. Harris. Analyzing single-vertex broadcasts, eccentricity, and graph connectivity relationships.",
     icon: "📊",
   },
   {
     title: "Exhibit Maintenance",
     org: "Discovery World, Milwaukee",
     period: "Jul 2024 – Sep 2024",
-    tags: ["C++", "Python", "Arduino", "Raspberry Pi"],
+    tags: ["C++", "Python", "Arduino", "Raspberry Pi","3D Modeling", "Relays"],
     desc: "Designed a 3D circuit for the Wimshurst machine using Arduino + relays (C++). Rebuilt the Elements Display using Raspberry Pi (Python) and touch pads for more user interaction.",
     icon: "🤖",
   },
   {
-    title: "SURF Recipient – Solar Sculpture Project",
+    title: "SURF Recipient (Two-Time)",
     org: "College of Engineering & Applied Sciences, UWM",
-    period: "Sep 2023 – Aug 2024",
-    tags: ["PIC24", "MPLabs", "Embedded Systems", "PICKIT"],
-    desc: "Contributed to a Solar Sculpture that harvests sunlight by day and drives visual light performances at night using PIC24 microcontrollers.",
+    period: "Sep 2023 – Dec 2024",
+    tags: ["PIC24", "MPLAB X", "Embedded Systems", "LC-3", "Testing"],
+    desc: "Advanced a Solar Sculpture that harvests sunlight by day and drives visual light performances at night using a PIC24 microcontroller and circuit debugger in MPLAB X on Linux. In the second term, tested and debugged an LC-3 visualization tool and wrote its documentation and user manual.",
     icon: "☀️",
   },
+];
+
+const PROJECTS = [
+  { icon: "📡", title: "MQTT File Transfer Pipeline", desc: "Cross-architecture pipeline between an x64 Windows host and an ARM-based Linux access controller, deployed with Docker and QEMU. JSON messages carry file metadata, and the controller bundles requested files into a single tar archive that downloads automatically to the PC.", tags: ["MQTT", "Docker", "QEMU", "ARM Linux"] },
+  { icon: "🗓️", title: "Scheduling Management Web App", desc: "Role-based scheduling system with dedicated dashboards for students, TAs, instructors, and admins. Built the Django backend and responsive Bootstrap UI in a scrum-based team.", tags: ["Django", "Bootstrap", "Python", "Agile"] },
+  { icon: "🧮", title: "LC-3 Visualization Tool", desc: "Tested and debugged an educational LC-3 visualization tool as a SURF fellow, and wrote its project documentation and user manual.", tags: ["LC-3", "Testing", "Documentation"] },
+  { icon: "☀️", title: "Solar Light Sculpture", desc: "Engineered a solar-powered sculpture that stores energy during the day and drives interactive light performances at night using PIC24 and MPLAB X.", tags: ["PIC24", "MPLAB X", "Embedded"] },
+  { icon: "⚗️", title: "Wimshurst Machine Redesign", desc: "Modernized a classic electrostatic generator at Discovery World using Arduino and relay-based control, programmed in C++.", tags: ["Arduino", "C++", "Hardware"] },
+  { icon: "🫐", title: "Elements Display (Raspberry Pi)", desc: "Rebuilt the periodic elements interactive display from scratch at Discovery World using a Raspberry Pi, programmed in Python.", tags: ["Raspberry Pi", "Python", "Linux"] },
 ];
 
 // ── Matrix palette tokens ──────────────────────────────────────
@@ -227,19 +253,12 @@ function FeatureCard({ children }) {
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("home");
-  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const onMove = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
   // ── ScrollSpy: watches a thin band across the vertical center of the
@@ -265,15 +284,6 @@ export default function Portfolio() {
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setActiveSection(id);
-  };
-
-  const glowStyle = {
-    position: "fixed",
-    left: cursorPos.x - 200, top: cursorPos.y - 200,
-    width: 400, height: 400,
-    background: `radial-gradient(circle, ${M.glow} 0%, transparent 70%)`,
-    pointerEvents: "none", zIndex: 0,
-    transition: "left 0.1s, top 0.1s",
   };
 
   return (
@@ -417,8 +427,8 @@ export default function Portfolio() {
         }
       `}</style>
 
-      {/* Cursor glow */}
-      <div style={glowStyle} />
+      {/* Y2K x Matrix cursor: glow torch + pixel arrow + glyph trail */}
+      <MatrixCursor />
 
       {/* Background grid */}
       <div style={{
@@ -482,7 +492,7 @@ export default function Portfolio() {
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => scrollTo("about")} style={{
+            <button onClick={() => scrollTo("experience")} style={{
               padding: "14px 32px", borderRadius: "12px", border: `1px solid ${M.mid}`, cursor: "pointer",
               background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
               backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
@@ -497,14 +507,15 @@ export default function Portfolio() {
             </button>
             <button onClick={() => scrollTo("contact")} style={{
               padding: "14px 32px", borderRadius: "12px", cursor: "pointer",
-              border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-              backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-              color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
+              border: `1px solid ${M.dim}`,
+              background: "linear-gradient(135deg, rgba(58,58,58,0.95), rgba(105,105,105,0.88))",
+              backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
+              color: M.bright, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
               transition: "all 0.2s", display: "inline-block",
-              boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
+              boxShadow: "0 0 0 0.5px rgba(255,255,255,0.18), 0 2px 0 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(80,80,80,0.95), rgba(135,135,135,0.9))"; e.currentTarget.style.borderColor = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(58,58,58,0.95), rgba(105,105,105,0.88))"; e.currentTarget.style.borderColor = M.dim; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(255,255,255,0.18), 0 2px 0 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; }}
             >
               Contact
             </button>
@@ -527,21 +538,29 @@ export default function Portfolio() {
               <Card>
                 <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "28px", color: M.bright }}>Proficiency</h3>
                 {SKILLS.map((s, i) => <SkillBar key={s.name} {...s} delay={i * 0.08} />)}
+                <div style={{ marginTop: "22px" }}>
+                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: M.dim, marginBottom: "8px" }}>Also working with</p>
+                  {["MATLAB", "Assembly", "Bootstrap"].map(t => <span key={t} className="tag">{t}</span>)}
+                </div>
               </Card>
             </FadeIn>
             <FadeIn delay={0.2}>
-              <Card style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <Card style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "16px", color: M.bright }}>Hardware & Embedded</h3>
-                  {["Arduino Uno", "Raspberry Pi", "PIC24 Microcontroller", "MPLab X", "PICKIT3"].map(t => <span key={t} className="tag">{t}</span>)}
+                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Hardware & Embedded</h3>
+                  {["Arduino Uno", "Raspberry Pi", "PIC24 Microcontroller", "MPLAB X", "PICKIT3", "ARM Linux Controllers", "Access Control (SIOs, Readers, Locks)"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "16px", color: M.bright }}>Domains</h3>
-                  {["Graph Theory", "Embedded Systems", "Software Dev", "Web Dev", "AI"].map(t => <span key={t} className="tag">{t}</span>)}
+                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Domains</h3>
+                  {["Embedded Systems", "Quality Assurance", "Software Dev", "Web Dev", "Graph Theory", "AI"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "16px", color: M.bright }}>Tools</h3>
-                  {["Git", "Linux", "LaTex", "MS Office"].map(t => <span key={t} className="tag">{t}</span>)}
+                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>QA & DevOps</h3>
+                  {["Jenkins", "SonarQube", "TestRail", "Jira", "Bitbucket"].map(t => <span key={t} className="tag">{t}</span>)}
+                </div>
+                <div>
+                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Tools</h3>
+                  {["Git", "Linux", "Docker", "QEMU", "MQTT", "LaTeX"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
               </Card>
             </FadeIn>
@@ -562,24 +581,24 @@ export default function Portfolio() {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {EXPERIENCES.map((exp, i) => (
               <FadeIn key={exp.title} delay={i * 0.1}>
-                <Card style={{ display: "flex", gap: "20px" }}>
-                  <div style={{
-                    width: 52, height: 52, borderRadius: "12px", flexShrink: 0,
-                    background: "linear-gradient(135deg, rgba(0,255,65,0.10), rgba(0,179,0,0.10))",
-                    border: "1px solid rgba(0,255,65,0.2)",
-                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px",
-                  }}>
-                    {exp.icon}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", marginBottom: "4px" }}>
-                      <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", fontWeight: 700, color: M.bright }}>{exp.title}</h3>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, whiteSpace: "nowrap" }}>{exp.period}</span>
+                <Card>
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "8px" }}>
+                    <div style={{
+                      width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
+                      background: "linear-gradient(135deg, rgba(0,255,65,0.10), rgba(0,179,0,0.10))",
+                      border: "1px solid rgba(0,255,65,0.2)",
+                      display: "flex", alignItems: "center", justifyContent: "center", fontSize: "30px",
+                    }}>
+                      {exp.icon}
                     </div>
-                    <p style={{ fontSize: "13px", color: M.dim, marginBottom: "10px", fontFamily: "'Space Mono', monospace" }}>{exp.org}</p>
-                    <p style={{ fontSize: "14px", color: M.textSec, lineHeight: 1.65, marginBottom: "12px" }}>{exp.desc}</p>
-                    <div>{exp.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
+                    <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "21px", fontWeight: 700, color: M.bright }}>{exp.title}</h3>
                   </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "4px 16px", marginBottom: "12px" }}>
+                    <p style={{ fontSize: "13px", color: M.dim, fontFamily: "'Space Mono', monospace" }}>{exp.org}</p>
+                    <span style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, whiteSpace: "nowrap" }}>{exp.period}</span>
+                  </div>
+                  <p style={{ fontSize: "14px", color: M.textSec, lineHeight: 1.65, marginBottom: "12px" }}>{exp.desc}</p>
+                  <div>{exp.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
                 </Card>
               </FadeIn>
             ))}
@@ -613,11 +632,7 @@ export default function Portfolio() {
           </FadeIn>
 
           <div className="grid-2">
-            {[
-              { icon: "☀️", title: "Solar Light Sculpture", desc: "Engineered a solar-powered sculpture that stores energy during the day and drives interactive light performances at night using PIC24 and MPLabs.", tags: ["PIC24", "MPLabs", "Embedded"] },
-              { icon: "⚗️", title: "Wimshurst Machine Redesign", desc: "Modernized a classic electrostatic generator at Discovery World using Arduino and relay-based control, programmed in C++.", tags: ["Arduino", "C++", "Hardware"] },
-              { icon: "🫐", title: "Elements Display (Raspberry Pi)", desc: "Rebuilt the periodic elements interactive display from scratch at Discovery World using a Raspberry Pi, programmed in Python.", tags: ["Raspberry Pi", "Python", "Linux"] },
-            ].map((p, i) => (
+            {PROJECTS.map((p, i) => (
               <FadeIn key={p.title} delay={0.2 + i * 0.05}>
                 <Card>
                   <div style={{ fontSize: "28px", marginBottom: "16px" }}>{p.icon}</div>
@@ -651,7 +666,7 @@ export default function Portfolio() {
                 onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
                 onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
               >
-                neerajk2@uwm.edu
+                Email ↗
               </a>
               <a href="https://www.linkedin.com/in/gourilakshmineerajkumar" target="_blank" rel="noopener noreferrer" style={{
                 padding: "14px 32px", borderRadius: "12px",
@@ -672,22 +687,14 @@ export default function Portfolio() {
               download="Gourilakshmi_Neerajkumar_Resume.pdf"
               style={{
                 padding: "14px 32px", borderRadius: "12px",
-                background: M.glassBg,
-                backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-                border: `1px solid ${M.glassBdr}`,
-                color: M.mid, fontWeight: 600, fontSize: "14px",
-                fontFamily: "'Space Mono', monospace",
-                transition: "all 0.25s",
-                boxShadow: "inset 0 1px 0 rgba(0,255,65,0.08)",
+                border: `1px solid ${M.glassBdr}`, background: M.glassBg,
+                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
+                color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
+                transition: "all 0.2s", display: "inline-block",
+                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = M.glassBgHov;
-                e.currentTarget.style.borderColor = M.glassBdrHov;
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = M.glassBg;
-                e.currentTarget.style.borderColor = M.glassBdr;
-              }}
+              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
             >
               Resume ↓
             </a>
@@ -695,7 +702,7 @@ export default function Portfolio() {
           </FadeIn>
         </div>
         <div style={{ borderTop: `1px solid ${M.dark}`, textAlign: "center", padding: "24px", fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dark }}>
-          © 2025 Gourilakshmi Neerajkumar
+          © 2026 Gourilakshmi Neerajkumar
         </div>
       </section>
     </div>
