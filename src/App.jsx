@@ -683,8 +683,8 @@ export default function Portfolio() {
               </a>
                           {/* Resume download */}
             <a
-              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`}
-              download="Gourilakshmi_Neerajkumar_Resume.pdf"
+              href={`${import.meta.env.BASE_URL}resume/Gouri_Neerajkumar_Resume.pdf`}
+              download="Gouri_Neerajkumar_Resume.pdf"
               style={{
                 padding: "14px 32px", borderRadius: "12px",
                 border: `1px solid ${M.glassBdr}`, background: M.glassBg,
