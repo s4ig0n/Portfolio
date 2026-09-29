@@ -495,7 +495,7 @@ export default function Portfolio() {
             >
               View Work →
             </button>
-            <a href="mailto:neerajk2@uwm.edu" style={{
+            <button onClick={() => scrollTo("contact")} style={{
               padding: "14px 32px", borderRadius: "12px", cursor: "pointer",
               border: `1px solid ${M.glassBdr}`, background: M.glassBg,
               backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
@@ -507,7 +507,7 @@ export default function Portfolio() {
               onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
             >
               Contact
-            </a>
+            </button>
           </div>
         </div>
       </section>
@@ -666,6 +666,31 @@ export default function Portfolio() {
               >
                 LinkedIn ↗
               </a>
+                          {/* Resume download */}
+            <a
+              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`}
+              download="Gourilakshmi_Neerajkumar_Resume.pdf"
+              style={{
+                padding: "14px 32px", borderRadius: "12px",
+                background: M.glassBg,
+                backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+                border: `1px solid ${M.glassBdr}`,
+                color: M.mid, fontWeight: 600, fontSize: "14px",
+                fontFamily: "'Space Mono', monospace",
+                transition: "all 0.25s",
+                boxShadow: "inset 0 1px 0 rgba(0,255,65,0.08)",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = M.glassBgHov;
+                e.currentTarget.style.borderColor = M.glassBdrHov;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = M.glassBg;
+                e.currentTarget.style.borderColor = M.glassBdr;
+              }}
+            >
+              Resume ↓
+            </a>
             </div>
           </FadeIn>
         </div>

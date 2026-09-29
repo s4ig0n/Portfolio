@@ -689,6 +689,31 @@ export default function Portfolio() {
               >
                 LinkedIn ↗
               </a>
+                          {/* Resume download */}
+            <a
+              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`}
+              download="Gourilakshmi_Neerajkumar_Resume.pdf"
+              style={{
+                padding: "14px 32px", borderRadius: "12px",
+                background: M.glassBg,
+                backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+                border: `1px solid ${M.glassBdr}`,
+                color: M.mid, fontWeight: 600, fontSize: "14px",
+                fontFamily: "'Space Mono', monospace",
+                transition: "all 0.25s",
+                boxShadow: "inset 0 1px 0 rgba(0,255,65,0.08)",
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = M.glassBgHov;
+                e.currentTarget.style.borderColor = M.glassBdrHov;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = M.glassBg;
+                e.currentTarget.style.borderColor = M.glassBdr;
+              }}
+            >
+              Resume ↓
+            </a>
             </div>
           </FadeIn>
         </div>
