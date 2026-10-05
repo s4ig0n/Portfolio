@@ -32,9 +32,9 @@ const EXPERIENCES = [
   {
     title: "Undergraduate Researcher – Graph Theory",
     org: "Dept. of Mathematical Sciences, UWM · MAA, NSF",
-    period: "May 2025 – Present",
+    period: "May 2025 – Aug 2025",
     tags: ["Graph Theory", "MATLAB", "Academic Writing", "LaTeX"],
-    desc: "Researching Truncated Square Graphs with a focus on Total Restricted Broadcast Domination, working on questions proposed by J. Cervantes and P. Harris. Analyzing single-vertex broadcasts, eccentricity, and graph connectivity relationships.",
+    desc: "Researched Truncated Square Graphs with a focus on Total Restricted Broadcast Domination, working on questions proposed by J. Cervantes and P. Harris. Analyzed single-vertex broadcasts, eccentricity, and graph connectivity relationships.",
     icon: "📊",
   },
   {
@@ -157,11 +157,16 @@ function SkillBar({ name, level, delay }) {
   );
 }
 
+// Phones fire mouseenter on tap and never mouseleave, which leaves cards stuck "lifted".
+// Only enable hover effects on devices that can actually hover.
+const canHover = typeof window !== "undefined" && window.matchMedia?.("(hover: hover)").matches;
+
 function Card({ children, style = {} }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
+      className="glass-card"
+      onMouseEnter={() => canHover && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         background: "rgba(0,28,0,0.38)",
@@ -170,7 +175,6 @@ function Card({ children, style = {} }) {
         borderRadius: "18px",
         position: "relative",
         overflow: "hidden",
-        padding: "28px",
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         boxShadow: hovered ? shadowHover : shadowRest,
         transform: hovered ? "translateY(-5px) scale(1.012)" : "translateY(0) scale(1)",
@@ -205,10 +209,11 @@ function FeatureCard({ children }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
+      className="feature-card"
+      onMouseEnter={() => canHover && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        borderRadius: "20px", padding: "40px",
+        borderRadius: "20px",
         background: "rgba(0,28,0,0.38)",
         backdropFilter: liquidBlur,
         WebkitBackdropFilter: liquidBlur,
@@ -405,7 +410,6 @@ export default function Portfolio() {
           .side-nav { right: 16px; gap: 14px; }
           .side-nav-label { display: none; }
           .side-nav-item { gap: 0; }
-          .section { padding-right: 46px; }
         }
 
         .section { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
@@ -418,12 +422,72 @@ export default function Portfolio() {
           color: #00ff41;
         }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        /* ── Layout helpers ─────────────────────────────────── */
+        a, button { -webkit-tap-highlight-color: transparent; }
+        .glass-card { padding: 28px; }
+        .feature-card { padding: 40px; }
+        .hero { min-height: 100vh; min-height: 100svh; }
+        .hero-name { font-size: clamp(34px, 10.5vw, 90px); letter-spacing: -3px; overflow-wrap: break-word; }
+
+        /* Between: compact banner under Dean's List */
+        .banner-row { display: flex; align-items: center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; }
+        .banner-main { flex: 1 1 320px; min-width: 0; }
+        .banner-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; color: #c9c9c9; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+        .banner-main h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; margin-bottom: 6px; }
+        .banner-main p { font-size: 14px; color: #b5b5b5; line-height: 1.6; }
+        .status-pill {
+          display: inline-flex; align-items: center; white-space: nowrap;
+          padding: 6px 14px; border-radius: 999px;
+          font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #00ff41;
+          background: rgba(0,255,65,0.07); border: 0.5px solid rgba(0,255,65,0.4);
+        }
+
         .dot {
           width: 8px; height: 8px; border-radius: 50%;
           background: #00ff41;
           animation: pulse-glow 2s infinite;
           display: inline-block;
           margin-right: 8px;
+        }
+
+        /* ── Responsive: tablet ───────────────────────────────── */
+        @media (max-width: 900px) {
+          .section { padding-right: 46px; }
+        }
+
+        /* ── Responsive: phone ────────────────────────────────── */
+        @media (max-width: 600px) {
+          .section { padding: 56px 18px; }
+          .glass-card { padding: 20px; }
+          .feature-card { padding: 24px; }
+          /* lighter blur keeps scrolling smooth on phones */
+          .glass-card, .feature-card { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
+          .hero-name { letter-spacing: -1.5px; }
+          .exp-title { font-size: 18px !important; }
+          .exp-icon { width: 40px !important; height: 40px !important; font-size: 24px !important; }
+
+          /* Side nav becomes a bottom dock */
+          .side-nav {
+            top: auto; right: auto; left: 50%;
+            bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            transform: translateX(-50%);
+            flex-direction: row; align-items: center; gap: 2px;
+            padding: 5px; border-radius: 999px;
+            max-width: calc(100vw - 16px); overflow-x: auto;
+            background: rgba(10,14,10,0.78);
+            border: 0.5px solid rgba(255,255,255,0.14);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+          }
+          .side-nav-item { gap: 0; padding: 8px 8px; border-radius: 999px; transition: background 0.3s; }
+          .side-nav-item.active { background: rgba(0,255,65,0.14); }
+          .side-nav-dot { display: none; }
+          .side-nav-label, .side-nav-label.active {
+            display: block; font-size: 10px; letter-spacing: 0; transform: none; opacity: 1;
+          }
+          .side-nav-label { color: #8a8a8a; font-weight: 400; }
+          .side-nav-label.active { color: #00ff41; font-weight: 700; }
+          .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
         }
       `}</style>
 
@@ -457,7 +521,7 @@ export default function Portfolio() {
         {NAV_LINKS.map((l) => (
           <div
             key={l}
-            className="side-nav-item"
+            className={`side-nav-item ${activeSection === l ? "active" : ""}`}
             onClick={() => scrollTo(l)}
           >
             <span className={`side-nav-label ${activeSection === l ? "active" : ""}`}>{l}</span>
@@ -467,7 +531,7 @@ export default function Portfolio() {
       </nav>
 
       {/* HERO */}
-      <section id="home" style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
+      <section id="home" className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
         <div style={{ textAlign: "center", maxWidth: 1000 }}>
           <div style={{ position: "absolute", top: "20%", left: "10%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,255,65,0.12), transparent)", animation: "float 6s ease-in-out infinite", filter: "blur(40px)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: "25%", right: "8%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,0,0.10), transparent)", animation: "float 8s ease-in-out infinite 2s", filter: "blur(50px)", pointerEvents: "none" }} />
@@ -476,10 +540,9 @@ export default function Portfolio() {
             <span className="dot" />Senior @ UWM · CS with Honors
           </div>
 
-          <h1 style={{
+          <h1 className="hero-name" style={{
             fontFamily: "'Syne', sans-serif",
-            fontSize: "clamp(48px, 10vw, 90px)",
-            fontWeight: 800, lineHeight: 1.0, letterSpacing: "-3px",
+            fontWeight: 800, lineHeight: 1.0,
             background: `linear-gradient(135deg, #ccffcc 20%, ${M.bright} 60%, ${M.mid} 100%)`,
             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
             marginBottom: "24px",
@@ -583,7 +646,7 @@ export default function Portfolio() {
               <FadeIn key={exp.title} delay={i * 0.1}>
                 <Card>
                   <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "8px" }}>
-                    <div style={{
+                    <div className="exp-icon" style={{
                       width: 44, height: 44, borderRadius: "12px", flexShrink: 0,
                       background: "linear-gradient(135deg, rgba(0,255,65,0.10), rgba(0,179,0,0.10))",
                       border: "1px solid rgba(0,255,65,0.2)",
@@ -591,7 +654,7 @@ export default function Portfolio() {
                     }}>
                       {exp.icon}
                     </div>
-                    <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "21px", fontWeight: 700, color: M.bright }}>{exp.title}</h3>
+                    <h3 className="exp-title" style={{ fontFamily: "'Syne', sans-serif", fontSize: "21px", fontWeight: 700, color: M.bright }}>{exp.title}</h3>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "4px 16px", marginBottom: "12px" }}>
                     <p style={{ fontSize: "13px", color: M.dim, fontFamily: "'Space Mono', monospace" }}>{exp.org}</p>
@@ -629,6 +692,20 @@ export default function Portfolio() {
               <span className="tag">Full-time Student</span>
               <span className="tag">UWM Honors</span> */}
             </FeatureCard>
+          </FadeIn>
+
+          {/* Between: compact banner under Dean's List */}
+          <FadeIn delay={0.15}>
+            <Card style={{ marginBottom: "20px" }}>
+              <div className="banner-row">
+                <div className="banner-main">
+                  <div className="banner-eyebrow">🏆 High Impact Award · MKE Tech FUSE · Oct 2026</div>
+                  <h3>Between</h3>
+                  <p>Keeping physical therapy patients on track between visits by putting their care plans in the calendar, reminders, and lock screen they already use.</p>
+                </div>
+                <span className="status-pill"><span className="dot" />In progress</span>
+              </div>
+            </Card>
           </FadeIn>
 
           <div className="grid-2">
@@ -683,8 +760,8 @@ export default function Portfolio() {
               </a>
                           {/* Resume download */}
             <a
-              href={`${import.meta.env.BASE_URL}resume/Gouri_Neerajkumar_Resume.pdf`}
-              download="Gouri_Neerajkumar_Resume.pdf"
+              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`}
+              download="Gourilakshmi_Neerajkumar_Resume.pdf"
               style={{
                 padding: "14px 32px", borderRadius: "12px",
                 border: `1px solid ${M.glassBdr}`, background: M.glassBg,
@@ -701,7 +778,7 @@ export default function Portfolio() {
             </div>
           </FadeIn>
         </div>
-        <div style={{ borderTop: `1px solid ${M.dark}`, textAlign: "center", padding: "24px", fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dark }}>
+        <div className="site-footer" style={{ borderTop: `1px solid ${M.dark}`, textAlign: "center", padding: "24px", fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dark }}>
           © 2026 Gourilakshmi Neerajkumar
         </div>
       </section>
