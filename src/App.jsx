@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
 
-const NAV_LINKS = ["home", "skills", "experience", "about", "contact"];
+const NAV_LINKS = ["home", "skills", "experience", "projects", "contact"];
 
 const SKILLS = [
   { name: "Python", level: 95 },
@@ -427,7 +427,7 @@ export default function Portfolio() {
         .glass-card { padding: 28px; }
         .feature-card { padding: 40px; }
         .hero { min-height: 100vh; min-height: 100svh; }
-        .hero-name { font-size: clamp(34px, 10.5vw, 90px); letter-spacing: -3px; overflow-wrap: break-word; }
+        .hero-name { font-size: clamp(30px, 9vw, 90px); letter-spacing: -3px; overflow-wrap: break-word; }
 
         /* Between: compact banner under Dean's List */
         .banner-row { display: flex; align-items: center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; }
@@ -466,27 +466,56 @@ export default function Portfolio() {
           .exp-title { font-size: 18px !important; }
           .exp-icon { width: 40px !important; height: 40px !important; font-size: 24px !important; }
 
-          /* Side nav becomes a bottom dock */
+          #home { padding: 0 18px !important; }
+
+          /* Side nav becomes a liquid-glass bottom dock */
           .side-nav {
             top: auto; right: auto; left: 50%;
-            bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
             transform: translateX(-50%);
             flex-direction: row; align-items: center; gap: 2px;
-            padding: 5px; border-radius: 999px;
-            max-width: calc(100vw - 16px); overflow-x: auto;
-            background: rgba(10,14,10,0.78);
-            border: 0.5px solid rgba(255,255,255,0.14);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.6);
+            padding: 6px; border-radius: 999px;
+            max-width: calc(100vw - 16px); overflow-x: auto; scrollbar-width: none;
+            background: linear-gradient(180deg, rgba(255,255,255,0.11) 0%, rgba(255,255,255,0.03) 55%, rgba(0,255,65,0.04) 100%);
+            backdrop-filter: blur(24px) saturate(190%) brightness(1.12);
+            -webkit-backdrop-filter: blur(24px) saturate(190%) brightness(1.12);
+            border: 0.5px solid rgba(255,255,255,0.24);
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.32),
+              inset 0 -1px 0 rgba(0,0,0,0.45),
+              inset 0 0 18px rgba(255,255,255,0.04),
+              0 0 0 0.5px rgba(0,255,65,0.14),
+              0 12px 32px rgba(0,0,0,0.55),
+              0 2px 8px rgba(0,0,0,0.4);
           }
-          .side-nav-item { gap: 0; padding: 8px 8px; border-radius: 999px; transition: background 0.3s; }
-          .side-nav-item.active { background: rgba(0,255,65,0.14); }
+          .side-nav::-webkit-scrollbar { display: none; }
+          /* specular sheen across the top half of the glass */
+          .side-nav::before {
+            content: ""; position: absolute; inset: 1px 1px 50% 1px; border-radius: 999px 999px 40px 40px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0));
+            pointer-events: none;
+          }
+          .side-nav-item {
+            position: relative; gap: 0; padding: 9px 9px; border-radius: 999px;
+            border: 0.5px solid transparent;
+            transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, transform 0.15s ease;
+          }
+          .side-nav-item:active { transform: scale(0.94); }
+          /* active item = a small glass lens with a green glow */
+          .side-nav-item.active {
+            background: radial-gradient(120% 150% at 50% 0%, rgba(255,255,255,0.24) 0%, rgba(0,255,65,0.12) 55%, rgba(0,255,65,0.05) 100%);
+            border-color: rgba(255,255,255,0.22);
+            box-shadow:
+              inset 0 1px 0 rgba(255,255,255,0.4),
+              inset 0 -1px 2px rgba(0,0,0,0.35),
+              0 0 14px rgba(0,255,65,0.28);
+          }
           .side-nav-dot { display: none; }
           .side-nav-label, .side-nav-label.active {
-            display: block; font-size: 10px; letter-spacing: 0; transform: none; opacity: 1;
+            display: block; font-size: 10.5px; letter-spacing: 0; transform: none; opacity: 1;
           }
-          .side-nav-label { color: #8a8a8a; font-weight: 400; }
-          .side-nav-label.active { color: #00ff41; font-weight: 700; }
+          .side-nav-label { color: #9a9a9a; font-weight: 400; }
+          .side-nav-label.active { color: #ccffcc; font-weight: 700; text-shadow: 0 0 10px rgba(0,255,65,0.6); }
           .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
         }
       `}</style>
@@ -669,12 +698,12 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* PROJECTS / AWARDS */}
-      <section id="about" style={{ position: "relative", zIndex: 1 }}>
+      {/* PROJECTS & ACHIEVEMENTS */}
+      <section id="projects" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
           <FadeIn>
             <div style={{ marginBottom: "48px" }}>
-              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>04 / about</p>
+              <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>04 / projects & achievements</p>
               <h2 className="section-title">Projects <br/> & Achievements</h2>
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
