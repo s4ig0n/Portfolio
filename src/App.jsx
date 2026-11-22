@@ -727,19 +727,30 @@ export default function Portfolio() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <div className="oc-feature-banner">
-              <div className="oc-feature-copy">
-                <div className="oc-feature-eyebrow">Rockwell Automation + NVIDIA · Physical AI Hackathon · 2026</div>
-                <h3>Overclocked</h3>
-                <p>A perception-driven FANUC pick-and-place system that finds loose parts, verifies each grasp, and looks again after a miss.</p>
-                <div className="oc-feature-meta">
-                  <span>12 of 12 cubes placed</span>
-                  <span>Multi-camera vision</span>
-                  <span>Recovery loop</span>
+            <Card style={{ marginBottom: "20px" }}>
+              <div className="banner-row">
+                <div className="banner-main">
+                  <div className="banner-eyebrow">🦾 Team Lead · NVIDIA + Rockwell Automation Hackathon · Nov 2026</div>
+                  <h3>Overclocked</h3>
+                  <p>A camera-guided FANUC pick-and-place system that checks each grasp and looks again after a miss. I wrote the Python pick-and-place policies; the team's system placed 12 of 12 cubes on the real cell.</p>
+                  <div style={{ marginTop: "12px" }}>
+                    {["Python", "OWLv2", "TensorRT", "Isaac Sim", "FANUC ER-4iA"].map(t => <span key={t} className="tag">{t}</span>)}
+                  </div>
                 </div>
-                <a className="oc-button oc-button-primary" href="#/projects/overclocked">View Project <span aria-hidden="true">→</span></a>
+                <a href="#/projects/overclocked" style={{
+                  padding: "12px 24px", borderRadius: "12px", border: `1px solid ${M.mid}`, whiteSpace: "nowrap",
+                  background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
+                  color: M.bright, fontWeight: 700, fontSize: "13px", fontFamily: "'Space Mono', monospace",
+                  boxShadow: "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
+                  transition: "all 0.2s",
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
+                >
+                  View Project →
+                </a>
               </div>
-            </div>
+            </Card>
           </FadeIn>
 
           <div className="grid-2">
