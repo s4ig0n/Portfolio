@@ -1,146 +1,299 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
-import "./overclocked.css";
+import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles } from "./theme.jsx";
 
-const ASSET_ROOT = `${import.meta.env.BASE_URL}projects/overclocked`;
+const ASSETS = `${import.meta.env.BASE_URL}projects/overclocked`;
 const GITHUB_URL = "https://github.com/ALL-Applied-AI-Network/overclocked";
 
-const FLOW = [
-  { number: "01", title: "Look", text: "Table, wrist, and side cameras locate a part and the destination bin." },
-  { number: "02", title: "Pick", text: "The FANUC ER-4iA refines the grasp with wrist RGB and depth, then closes on the part." },
-  { number: "03", title: "Check", text: "A TensorRT grasp classifier and wrist-camera check decide whether the pick held." },
-  { number: "04", title: "Look again", text: "If the grasp misses, the system skips the carry, observes again, and retries." },
+const NAV = [
+  { id: "top", label: "top" },
+  { id: "overview", label: "overview" },
+  { id: "approach", label: "approach" },
+  { id: "results", label: "results" },
+  { id: "video", label: "video" },
 ];
 
-const METRICS = [
-  { value: "12 / 12", label: "cubes placed across three clean runs" },
-  { value: "1.39 ms", label: "TensorRT FP16 grasp-check benchmark" },
-  { value: "3 cameras", label: "table, wrist, and side perception" },
+const STEPS = [
+  { icon: "👀", title: "Look", desc: "Table, wrist, and side cameras find a part and the destination bin. Color and silhouette detection runs first, with OWLv2 open-vocabulary detection on an NVIDIA DGX Spark." },
+  { icon: "🤏", title: "Pick", desc: "The wrist RGB-D camera refines where the gripper should close before the FANUC ER-4iA moves in." },
+  { icon: "✅", title: "Check", desc: "A side camera and a classifier on frozen NVIDIA C-RADIOv2 features decide whether the part is actually held before it gets carried." },
+  { icon: "🔁", title: "Look again", desc: "If the grasp looks empty, the arm skips the carry, looks at the table again, and retries. Dropped and hand-moved cubes get picked back up." },
 ];
 
-function Heading({ index, label, title }) {
+const STATS = [
+  { value: "12 / 12", label: "cubes placed across three clean real-cell runs after recalibration" },
+  { value: "0.958", label: "held-out AUC for the grasp check, on 107 labeled crops from 41 grasps" },
+  { value: "1.39 ms", label: "grasp-check inference with TensorRT FP16" },
+];
+
+const primaryRest = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)";
+const ghostRest = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)";
+
+const btnBase = {
+  padding: "14px 32px", borderRadius: "12px", cursor: "pointer", display: "inline-block",
+  fontSize: "14px", fontFamily: "'Space Mono', monospace", transition: "all 0.2s",
+  backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
+};
+
+function PrimaryButton({ href, children, external }) {
   return (
-    <div className="oc-heading">
-      <p className="oc-eyebrow">{index} / {label}</p>
-      <h2 className="oc-title">{title}</h2>
-      <div className="oc-rule" />
-    </div>
+    <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{
+      ...btnBase, border: `1px solid ${M.mid}`, color: M.bright, fontWeight: 700, letterSpacing: "0.5px",
+      background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))", boxShadow: primaryRest,
+    }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = primaryRest; e.currentTarget.style.borderColor = M.mid; }}
+    >{children}</a>
   );
 }
 
+function GhostButton({ href, children, external }) {
+  return (
+    <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{
+      ...btnBase, border: `1px solid ${M.glassBdr}`, background: M.glassBg, color: M.mid, fontWeight: 600, boxShadow: ghostRest,
+    }}
+      onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+      onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = ghostRest; }}
+    >{children}</a>
+  );
+}
+
+function SectionHeader({ index, label, title }) {
+  return (
+    <FadeIn>
+      <div style={{ marginBottom: "48px" }}>
+        <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>{index} / {label}</p>
+        <h2 className="section-title">{title}</h2>
+        <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
+      </div>
+    </FadeIn>
+  );
+}
+
+const cardTitle = { fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "10px", color: M.bright };
+const cardText = { fontSize: "14px", color: M.textSec, lineHeight: 1.65 };
+const caption = { fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dim, marginTop: "12px", lineHeight: 1.6 };
+const twoCol = { gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" };
+const media = { width: "100%", display: "block", borderRadius: "10px" };
+
 export default function OverclockedProject() {
+  const [active, setActive] = useState("top");
+  const [scrolled, setScrolled] = useState(false);
+
   useEffect(() => {
     const previousTitle = document.title;
     document.title = "Overclocked | GLN Portfolio";
     window.scrollTo(0, 0);
-    return () => {
-      document.title = previousTitle;
-    };
+    return () => { document.title = previousTitle; };
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); }),
+      { rootMargin: "-45% 0px -45% 0px", threshold: 0 }
+    );
+    NAV.forEach(({ id }) => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setActive(id);
+  };
+
   return (
-    <main className="oc-page">
+    <div style={{ background: M.bg, minHeight: "100vh", color: M.bright, fontFamily: "'DM Sans', sans-serif", overflowX: "hidden" }}>
+      <SiteStyles />
       <MatrixCursor />
-      <div className="oc-grid-bg" aria-hidden="true" />
 
-      <header className="oc-topbar">
-        <a className="oc-brand" href="#projects" aria-label="Back to portfolio projects">GLN<span>_</span></a>
-        <a className="oc-back" href="#projects">← Back to portfolio</a>
-      </header>
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        backgroundImage: "linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
+      }} />
 
-      <section className="oc-section oc-hero">
-        <p className="oc-kicker"><span className="dot" />Team Lead · NVIDIA + Rockwell Automation Hackathon · 2026</p>
-        <h1>Overclocked</h1>
-        <p className="oc-lede">
-          A robot that looks before it moves. Our team built a perception-driven pick-and-place system for a FANUC ER-4iA: multi-camera vision finds loose parts, checks each grasp, and looks again after a miss so the arm recovers instead of carrying an empty gripper. I led the team and wrote the Python pick-and-place policies.
-        </p>
-        <div className="oc-actions">
-          <a className="oc-btn oc-btn-primary" href={GITHUB_URL} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-          <a className="oc-btn oc-btn-secondary" href="#showcase">Watch the video ↓</a>
+      {/* Brand mark, same as the home page; links back to projects */}
+      <a href="#projects" aria-label="Back to portfolio projects" style={{
+        position: "fixed", top: 0, left: 0, zIndex: 100, padding: "20px 28px",
+        background: scrolled ? "rgba(22,22,29,0.75)" : "transparent",
+        backdropFilter: scrolled ? liquidBlur : "none", WebkitBackdropFilter: scrolled ? liquidBlur : "none",
+        borderBottomRightRadius: scrolled ? "14px" : 0, transition: "all 0.3s ease",
+        fontFamily: "'Space Mono', monospace", fontSize: "14px", color: M.bright, fontWeight: 700,
+      }}>
+        ← GLN<span style={{ animation: "blink 1.2s infinite", display: "inline-block" }}>_</span>
+      </a>
+
+      <nav className="side-nav" aria-label="Section navigation">
+        {NAV.map(({ id, label }) => (
+          <div key={id} className={`side-nav-item ${active === id ? "active" : ""}`} onClick={() => scrollTo(id)}>
+            <span className={`side-nav-label ${active === id ? "active" : ""}`}>{label}</span>
+            <span className={`side-nav-dot ${active === id ? "active" : ""}`} />
+          </div>
+        ))}
+      </nav>
+
+      {/* HERO */}
+      <section id="top" className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
+        <div style={{ textAlign: "center", maxWidth: 1000 }}>
+          <div style={{ position: "absolute", top: "20%", left: "10%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,255,65,0.12), transparent)", animation: "float 6s ease-in-out infinite", filter: "blur(40px)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", bottom: "25%", right: "8%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,0,0.10), transparent)", animation: "float 8s ease-in-out infinite 2s", filter: "blur(50px)", pointerEvents: "none" }} />
+
+          <div style={{ opacity: 0.8, fontFamily: "'Space Mono', monospace", fontSize: "12px", letterSpacing: "3px", color: M.mid, marginBottom: "20px", textTransform: "uppercase" }}>
+            <span className="dot" />NVIDIA + Rockwell Automation Hackathon · Nov 2026
+          </div>
+
+          <h1 className="hero-name" style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 800, lineHeight: 1.0,
+            background: `linear-gradient(135deg, #ccffcc 20%, ${M.bright} 60%, ${M.mid} 100%)`,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: "24px",
+          }}>
+            Overclocked
+          </h1>
+
+          <p style={{ fontSize: "17px", color: M.dim, maxWidth: 560, margin: "0 auto 36px", lineHeight: 1.7, fontWeight: 300 }}>
+            Vision-guided pick and place on a real FANUC robot cell.<br />It checks every grasp and looks again after a miss.
+          </p>
+
+          <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+            <PrimaryButton href={GITHUB_URL} external>GitHub ↗</PrimaryButton>
+            <GhostButton href="#video" >Watch the demo ↓</GhostButton>
+          </div>
         </div>
-        <div>
-          {["Python", "OpenCV", "OWLv2", "NVIDIA C-RADIO", "TensorRT", "Isaac Sim", "FANUC ER-4iA"].map((t) => <span key={t} className="tag">{t}</span>)}
-        </div>
-        <figure className="oc-glass oc-hero-photo">
-          <img src={`${ASSET_ROOT}/real-cell.png`} alt="FANUC ER-4iA robot over the physical pick-and-place work cell" />
-        </figure>
       </section>
 
-      <section className="oc-section" aria-label="Project results" style={{ paddingTop: 0 }}>
-        <div className="oc-grid-3">
-          {METRICS.map((m) => (
-            <div className="oc-glass oc-metric" key={m.value}>
-              <strong>{m.value}</strong>
-              <span>{m.label}</span>
+      {/* OVERVIEW */}
+      <section id="overview" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section">
+          <SectionHeader index="01" label="overview" title={<>The Problem &<br />My Part</>} />
+          <div className="grid-2" style={twoCol}>
+            <FadeIn delay={0.1}>
+              <Card>
+                <div style={{ fontSize: "28px", marginBottom: "16px" }}>📍</div>
+                <h3 style={cardTitle}>Taught positions break</h3>
+                <p style={cardText}>A fixed pick position works until a part lands a few millimeters off, a fixture moves, or a camera gets bumped. Then you get a silent miss, a controller fault, or another round of manual re-teaching.</p>
+              </Card>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <Card>
+                <div style={{ fontSize: "28px", marginBottom: "16px" }}>🧑‍💻</div>
+                <h3 style={cardTitle}>What I did</h3>
+                <p style={cardText}>Led Team Overclocked and wrote the Python pick-and-place policies: picking and placing, missed-grasp detection, and depth measurement. The policy checks whether a part is held before carrying it, and re-observes and retries when it isn't.</p>
+              </Card>
+            </FadeIn>
+          </div>
+          <FadeIn delay={0.25}>
+            <div style={{ marginTop: "20px" }}>
+              {["Python", "OpenCV", "OWLv2", "NVIDIA C-RADIOv2", "TensorRT", "DGX Spark", "Isaac Sim", "FANUC ER-4iA"].map(t => <span key={t} className="tag">{t}</span>)}
             </div>
-          ))}
+          </FadeIn>
         </div>
       </section>
 
-      <section className="oc-section">
-        <Heading index="01" label="the problem" title="Fixed coordinates fail when the real world shifts." />
-        <div className="oc-glass">
-          <p className="oc-body">
-            A taught pick position works until a part lands a few millimeters away, a fixture moves, or a camera is reseated. The result can be a silent miss, a controller fault, or another round of manual calibration.
-          </p>
-          <p className="oc-body">
-            Overclocked closes the loop between perception and action. The policy observes the cell before each move, targets what the cameras actually see, verifies the grasp, and recovers when the pick fails.
-          </p>
+      {/* APPROACH */}
+      <section id="approach" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section">
+          <SectionHeader index="02" label="approach" title={<>Look, Pick,<br />Check, Repeat</>} />
+          <div className="grid-2" style={twoCol}>
+            {STEPS.map((s, i) => (
+              <FadeIn key={s.title} delay={0.1 + i * 0.05}>
+                <Card style={{ height: "100%" }}>
+                  <div style={{ fontSize: "28px", marginBottom: "16px" }}>{s.icon}</div>
+                  <h3 style={cardTitle}>{s.title}</h3>
+                  <p style={cardText}>{s.desc}</p>
+                </Card>
+              </FadeIn>
+            ))}
+          </div>
+          <FadeIn delay={0.2}>
+            <Card style={{ marginTop: "20px" }}>
+              <img src={`${ASSETS}/workflow.png`} alt="Six-step workflow from table camera detection through grasp checking and looking again" style={media} />
+              <p style={caption}>The full loop. Nothing is picked from a hard-coded coordinate.</p>
+            </Card>
+          </FadeIn>
+          <FadeIn delay={0.25}>
+            <Card style={{ marginTop: "20px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "16px" }}>🧪</div>
+              <h3 style={cardTitle}>Simulation first, then the real cell</h3>
+              <p style={cardText}>We started with reinforcement learning in NVIDIA Isaac Sim, launched on Brev, plus mock scenes for geometry and safety checks. The simulated behavior didn't carry over to the arm, so final development and every number on this page come from the physical cell.</p>
+            </Card>
+          </FadeIn>
         </div>
       </section>
 
-      <section className="oc-section">
-        <Heading index="02" label="how it works" title="Look. Pick. Check. Look again." />
-        <div className="oc-steps">
-          {FLOW.map((step) => (
-            <article className="oc-glass oc-step" key={step.number}>
-              <span className="oc-step-num">{step.number}</span>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </article>
-          ))}
-        </div>
-        <figure className="oc-glass oc-figure">
-          <img src={`${ASSET_ROOT}/workflow.png`} alt="Six-step workflow from table camera detection through grasp checking and repeated observation" />
-          <figcaption>The final system combined open-vocabulary detection, wrist-camera refinement, grasp verification, and a recovery loop.</figcaption>
-        </figure>
-      </section>
-
-      <section className="oc-section">
-        <Heading index="03" label="evidence on hardware" title="Recovery mattered as much as the first pick." />
-        <p className="oc-body" style={{ maxWidth: 680, marginBottom: 8 }}>
-          With stale calibration, 0 of 3 runs finished. After recalibrating, the policy placed 12 of 12 cubes across three clean real-cell runs with no faults.
-        </p>
-        <div className="oc-grid-2">
-          <figure className="oc-glass oc-figure">
-            <img src={`${ASSET_ROOT}/vision-finds-parts.png`} alt="Three camera views showing the FANUC robot locating cubes" />
-            <figcaption>OWLv2 answered all five looks in the recorded models-on run.</figcaption>
-          </figure>
-          <figure className="oc-glass oc-figure">
-            <img src={`${ASSET_ROOT}/result-12-of-12.png`} alt="Result graphic comparing stale calibration with 12 of 12 cubes placed after recalibration" />
-            <figcaption>Small shifts had a large effect, so the system was built to observe and respond.</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section className="oc-section" id="showcase">
-        <Heading index="04" label="final showcase" title="See the full system in motion." />
-        <figure className="oc-glass oc-figure">
-          <video controls preload="metadata" poster={`${ASSET_ROOT}/workflow.png`}>
-            <source src={`${ASSET_ROOT}/showcase-final.mp4`} type="video/mp4" />
-            Your browser does not support the video player.
-          </video>
-        </figure>
-        <div className="oc-links">
-          <a href={`${ASSET_ROOT}/showcase-final.mp4`} target="_blank" rel="noopener noreferrer">Open video in a new tab ↗</a>
-          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">Explore the code ↗</a>
+      {/* RESULTS */}
+      <section id="results" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section">
+          <SectionHeader index="03" label="results" title={<>Results on<br />Real Hardware</>} />
+          <FadeIn delay={0.1}>
+            <FeatureCard>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🎯 REAL CELL · TEAM RESULT</div>
+              <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>12 of 12 cubes placed</h3>
+              <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px" }}>
+                With stale calibration, 0 of 3 runs finished and the controller faulted three times. The camera-to-gripper offset had drifted about 13 mm between test days. <strong style={{ color: M.bright }}>After recalibrating, the system placed all 12 cubes across three clean runs.</strong>
+              </p>
+            </FeatureCard>
+          </FadeIn>
+          <div className="grid-2" style={twoCol}>
+            {STATS.slice(1).map((s, i) => (
+              <FadeIn key={s.value} delay={0.15 + i * 0.05}>
+                <Card style={{ height: "100%" }}>
+                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "8px", color: "#00ff41" }}>{s.value}</h3>
+                  <p style={cardText}>{s.label}</p>
+                </Card>
+              </FadeIn>
+            ))}
+            <FadeIn delay={0.25}>
+              <Card style={{ height: "100%" }}>
+                <img src={`${ASSETS}/vision-finds-parts.png`} alt="Three camera views locating cubes on the table" style={media} />
+                <p style={caption}>Three camera views locating cubes during a recorded run.</p>
+              </Card>
+            </FadeIn>
+            <FadeIn delay={0.3}>
+              <Card style={{ height: "100%" }}>
+                <img src={`${ASSETS}/result-12-of-12.png`} alt="Stale calibration compared with 12 of 12 cubes placed after recalibration" style={media} />
+                <p style={caption}>Stale calibration versus recalibrated runs.</p>
+              </Card>
+            </FadeIn>
+          </div>
+          <FadeIn delay={0.2}>
+            <Card style={{ marginTop: "20px" }}>
+              <div style={{ fontSize: "28px", marginBottom: "16px" }}>⚠️</div>
+              <h3 style={cardTitle}>Limits</h3>
+              <p style={cardText}>One staged empty grasp still passed the check. Screws and a hex key didn't fit the gripper jaws, and batteries only picked some of the time. Recalibrating after a change was still manual, and every trial ran on one cell with someone watching. It's a working prototype, not a production system.</p>
+            </Card>
+          </FadeIn>
         </div>
       </section>
 
-      <footer className="oc-footer">
-        <a href="#projects">← More projects</a>
-        <span>© 2026 Gourilakshmi Neerajkumar</span>
-      </footer>
-    </main>
+      {/* VIDEO */}
+      <section id="video" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section">
+          <SectionHeader index="04" label="video" title={<>See It<br />Run</>} />
+          <FadeIn delay={0.1}>
+            <Card>
+              <video controls preload="metadata" poster={`${ASSETS}/workflow.png`} style={{ ...media, background: "#050805" }}>
+                <source src={`${ASSETS}/showcase-final.mp4`} type="video/mp4" />
+                Your browser does not support the video player.
+              </video>
+            </Card>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginTop: "40px" }}>
+              <PrimaryButton href="#projects">← More projects</PrimaryButton>
+              <GhostButton href={GITHUB_URL} external>GitHub ↗</GhostButton>
+            </div>
+          </FadeIn>
+        </div>
+        <div className="site-footer" style={{ borderTop: `1px solid ${M.dark}`, textAlign: "center", padding: "24px", fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dark }}>
+          © 2026 Gourilakshmi Neerajkumar
+        </div>
+      </section>
+    </div>
   );
 }
