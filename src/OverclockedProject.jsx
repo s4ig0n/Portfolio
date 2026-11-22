@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
-import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, GridBackground } from "./theme.jsx";
+import { M, liquidBlur, useFitHeadings, FadeIn, Card, FeatureCard, SiteStyles, LiquidButton, GridBackground } from "./theme.jsx";
 
 const ASSETS = `${import.meta.env.BASE_URL}projects/overclocked`;
 const GITHUB_URL = "https://github.com/ALL-Applied-AI-Network/overclocked";
@@ -26,38 +26,6 @@ const STATS = [
   { value: "1.39 ms", label: "grasp-check inference with TensorRT FP16" },
 ];
 
-const primaryRest = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)";
-const ghostRest = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)";
-
-const btnBase = {
-  padding: "14px 32px", borderRadius: "12px", cursor: "pointer", display: "inline-block",
-  fontSize: "14px", fontFamily: "'Space Mono', monospace", transition: "all 0.2s",
-  backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-};
-
-function PrimaryButton({ href, children, external }) {
-  return (
-    <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{
-      ...btnBase, border: `1px solid ${M.mid}`, color: M.bright, fontWeight: 700, letterSpacing: "0.5px",
-      background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))", boxShadow: primaryRest,
-    }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = primaryRest; e.currentTarget.style.borderColor = M.mid; }}
-    >{children}</a>
-  );
-}
-
-function GhostButton({ href, children, external }) {
-  return (
-    <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})} style={{
-      ...btnBase, border: `1px solid ${M.glassBdr}`, background: M.glassBg, color: M.mid, fontWeight: 600, boxShadow: ghostRest,
-    }}
-      onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-      onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = ghostRest; }}
-    >{children}</a>
-  );
-}
-
 function SectionHeader({ index, label, title }) {
   return (
     <FadeIn>
@@ -79,6 +47,7 @@ const media = { width: "100%", display: "block", borderRadius: "10px" };
 export default function OverclockedProject() {
   const [active, setActive] = useState("top");
   const [scrolled, setScrolled] = useState(false);
+  useFitHeadings();
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -136,7 +105,7 @@ export default function OverclockedProject() {
 
       {/* HERO */}
       <section id="top" className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
-        <div style={{ textAlign: "center", maxWidth: 1000 }}>
+        <div style={{ textAlign: "center", maxWidth: 1000, width: "100%" }}>
           <div style={{ position: "absolute", top: "20%", left: "10%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,255,65,0.12), transparent)", animation: "float 6s ease-in-out infinite", filter: "blur(40px)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: "25%", right: "8%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,0,0.10), transparent)", animation: "float 8s ease-in-out infinite 2s", filter: "blur(50px)", pointerEvents: "none" }} />
 
@@ -151,8 +120,8 @@ export default function OverclockedProject() {
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <PrimaryButton href={GITHUB_URL} external>GitHub ↗</PrimaryButton>
-            <GhostButton href="#video" >Watch the demo ↓</GhostButton>
+            <LiquidButton href={GITHUB_URL} external>GitHub ↗</LiquidButton>
+            <LiquidButton href="#video">Watch the demo ↓</LiquidButton>
           </div>
         </div>
       </section>
@@ -160,7 +129,7 @@ export default function OverclockedProject() {
       {/* OVERVIEW */}
       <section id="overview" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
-          <SectionHeader index="01" label="overview" title={<>The Problem &<br />My Part</>} />
+          <SectionHeader index="01" label="overview" title="The Problem & My Part" />
           <div className="grid-2" style={twoCol}>
             <FadeIn delay={0.1}>
               <Card>
@@ -188,7 +157,7 @@ export default function OverclockedProject() {
       {/* APPROACH */}
       <section id="approach" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
-          <SectionHeader index="02" label="approach" title={<>Look, Pick,<br />Check, Repeat</>} />
+          <SectionHeader index="02" label="approach" title="Look, Pick, Check, Repeat" />
           <div className="grid-2" style={twoCol}>
             {STEPS.map((s, i) => (
               <FadeIn key={s.title} delay={0.1 + i * 0.05}>
@@ -219,7 +188,7 @@ export default function OverclockedProject() {
       {/* RESULTS */}
       <section id="results" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
-          <SectionHeader index="03" label="results" title={<>Results on<br />Real Hardware</>} />
+          <SectionHeader index="03" label="results" title="Results on Real Hardware" />
           <FadeIn delay={0.1}>
             <FeatureCard>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🎯 REAL CELL · TEAM RESULT</div>
@@ -264,7 +233,7 @@ export default function OverclockedProject() {
       {/* VIDEO */}
       <section id="video" style={{ position: "relative", zIndex: 1 }}>
         <div className="section">
-          <SectionHeader index="04" label="video" title={<>See It<br />Run</>} />
+          <SectionHeader index="04" label="video" title="See It Run" />
           <FadeIn delay={0.1}>
             <Card>
               <video controls preload="metadata" poster={`${ASSETS}/workflow.png`} style={{ ...media, background: "#050805" }}>
@@ -275,8 +244,8 @@ export default function OverclockedProject() {
           </FadeIn>
           <FadeIn delay={0.15}>
             <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginTop: "40px" }}>
-              <PrimaryButton href="#projects">← More projects</PrimaryButton>
-              <GhostButton href={GITHUB_URL} external>GitHub ↗</GhostButton>
+              <LiquidButton href="#projects">← More projects</LiquidButton>
+              <LiquidButton href={GITHUB_URL} external>GitHub ↗</LiquidButton>
             </div>
           </FadeIn>
         </div>

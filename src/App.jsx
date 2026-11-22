@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
 import Skills from "./Skills.jsx";
-import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, LiquidButton, GridBackground } from "./theme.jsx";
+import { M, liquidBlur, useFitHeadings, FadeIn, Card, FeatureCard, SiteStyles, LiquidButton, GridBackground } from "./theme.jsx";
 
 const NAV_LINKS = ["home", "skills", "experience", "projects", "contact"];
 
@@ -63,6 +63,7 @@ const PROJECTS = [
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("home");
   const [scrolled, setScrolled] = useState(false);
+  useFitHeadings();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -142,7 +143,7 @@ export default function Portfolio() {
 
       {/* HERO */}
       <section id="home" className="hero" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative", zIndex: 1, padding: "0 24px" }}>
-        <div style={{ textAlign: "center", maxWidth: 1000 }}>
+        <div style={{ textAlign: "center", maxWidth: 1000, width: "100%" }}>
           <div style={{ position: "absolute", top: "20%", left: "10%", width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,255,65,0.12), transparent)", animation: "float 6s ease-in-out infinite", filter: "blur(40px)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", bottom: "25%", right: "8%", width: 220, height: 220, borderRadius: "50%", background: "radial-gradient(circle, rgba(0,179,0,0.10), transparent)", animation: "float 8s ease-in-out infinite 2s", filter: "blur(50px)", pointerEvents: "none" }} />
 
@@ -150,7 +151,7 @@ export default function Portfolio() {
             <span className="dot" />Senior @ UWM · CS with Honors
           </div>
 
-          <h1 className="name-pixel">Gourilakshmi<br />Neerajkumar</h1>
+          <h1 className="name-pixel">Gourilakshmi Neerajkumar</h1>
 
           <p style={{ fontSize: "17px", color: M.dim, maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7, fontWeight: 300 }}>
             Call me gouri.<br /> I build things and occassionally break things- usually on purpose ;)
@@ -183,7 +184,7 @@ export default function Portfolio() {
           <FadeIn>
             <div style={{ marginBottom: "48px" }}>
               <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>03 / experience</p>
-              <h2 className="section-title">Experience &<br />Research</h2>
+              <h2 className="section-title">Experience & Research</h2>
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
@@ -221,7 +222,7 @@ export default function Portfolio() {
           <FadeIn>
             <div style={{ marginBottom: "48px" }}>
               <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "8px" }}>04 / projects & achievements</p>
-              <h2 className="section-title">Projects <br/> & Achievements</h2>
+              <h2 className="section-title">Projects & Achievements</h2>
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
@@ -262,7 +263,7 @@ export default function Portfolio() {
                   <h3>Overclocked</h3>
                   <p>Vision-guided pick and place on a real FANUC robot cell that checks every grasp and looks again after a miss.</p>
                 </div>
-                <a className="status-pill" href="#/projects/overclocked">View project →</a>
+                <LiquidButton small href="#/projects/overclocked">View project →</LiquidButton>
               </div>
             </Card>
           </FadeIn>
@@ -288,69 +289,13 @@ export default function Portfolio() {
         <div className="section" style={{ textAlign: "center" }}>
           <FadeIn>
             <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "16px" }}>05 / contact</p>
-            <h2 className="section-title" style={{ marginBottom: "16px" }}>Intrigued? <br/> Let's Connect</h2>
+            <h2 className="section-title" style={{ marginBottom: "16px" }}>Intrigued? Let's Connect</h2>
             <p style={{ color: M.dim, marginBottom: "40px", fontSize: "15px" }}>Graduating May 2027. Open to full-time roles starting in 2027, research, and cool projects.</p>
             <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-              <a href="mailto:neerajk2@uwm.edu" style={{
-                padding: "14px 32px", borderRadius: "12px",
-                background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
-                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-                border: `1px solid ${M.mid}`, color: M.bright,
-                fontWeight: 700, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-                transition: "all 0.2s", display: "inline-block",
-                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
-              }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
-              >
-                Email ↗
-              </a>
-              <a href="https://www.linkedin.com/in/gourilakshmineerajkumar" target="_blank" rel="noopener noreferrer" style={{
-                padding: "14px 32px", borderRadius: "12px",
-                border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-                color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-                transition: "all 0.2s", display: "inline-block",
-                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-                onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
-              >
-                LinkedIn ↗
-              </a>
-                          {/* Resume download */}
-            <a
-              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`}
-              download="Gourilakshmi_Neerajkumar_Resume.pdf"
-              style={{
-                padding: "14px 32px", borderRadius: "12px",
-                border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-                color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-                transition: "all 0.2s", display: "inline-block",
-                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
-            >
-              Resume (1 page) ↓
-            </a>
-            <a
-              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_CV.pdf`}
-              download="Gourilakshmi_Neerajkumar_CV.pdf"
-              style={{
-                padding: "14px 32px", borderRadius: "12px",
-                border: `1px solid ${M.glassBdr}`, background: M.glassBg,
-                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-                color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-                transition: "all 0.2s", display: "inline-block",
-                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
-            >
-              Full CV ↓
-            </a>
+              <LiquidButton href="mailto:neerajk2@uwm.edu">Email ↗</LiquidButton>
+              <LiquidButton href="https://www.linkedin.com/in/gourilakshmineerajkumar" external>LinkedIn ↗</LiquidButton>
+              <LiquidButton href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_Resume.pdf`} download="Gourilakshmi_Neerajkumar_Resume.pdf">Resume (1 page) ↓</LiquidButton>
+              <LiquidButton href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_CV.pdf`} download="Gourilakshmi_Neerajkumar_CV.pdf">Full CV ↓</LiquidButton>
             </div>
           </FadeIn>
         </div>

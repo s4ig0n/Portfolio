@@ -74,26 +74,31 @@ export function FadeIn({ children, delay = 0, className = "" }) {
 // Only enable hover effects on devices that can actually hover.
 export const canHover = typeof window !== "undefined" && window.matchMedia?.("(hover: hover)").matches;
 
+const lgRim = "inset 0 0 0 1px rgba(255,255,255,0.10), inset 1.5px 1.5px 0 -0.5px rgba(255,255,255,0.40), inset -1px -1px 0 -0.5px rgba(255,255,255,0.14)";
+
 export function Card({ children, style = {} }) {
   const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+  const [lensStyle, lensSvg] = useLens(ref, 18);
   return (
     <div
+      ref={ref}
       className="glass-card"
       onMouseEnter={() => canHover && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
+        ...lensStyle,
         background: "rgba(0,28,0,0.38)",
-        backdropFilter: liquidBlur,
-        WebkitBackdropFilter: liquidBlur,
         borderRadius: "18px",
         position: "relative",
         overflow: "hidden",
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
-        boxShadow: hovered ? shadowHover : shadowRest,
+        boxShadow: `${lgRim}, ${hovered ? shadowHover : shadowRest}`,
         transform: hovered ? "translateY(-5px) scale(1.012)" : "translateY(0) scale(1)",
         ...style,
       }}
     >
+      {lensSvg}
       {/* Specular top-edge highlight */}
       <div style={{
         position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
@@ -120,22 +125,25 @@ export function Card({ children, style = {} }) {
 // Reusable liquid glass feature card (used for Dean's List etc.)
 export function FeatureCard({ children }) {
   const [hovered, setHovered] = useState(false);
+  const ref = useRef(null);
+  const [lensStyle, lensSvg] = useLens(ref, 20);
   return (
     <div
+      ref={ref}
       className="feature-card"
       onMouseEnter={() => canHover && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
+        ...lensStyle,
         borderRadius: "20px",
         background: "rgba(0,28,0,0.38)",
-        backdropFilter: liquidBlur,
-        WebkitBackdropFilter: liquidBlur,
-        boxShadow: hovered ? shadowHover : shadowRest,
+        boxShadow: `${lgRim}, ${hovered ? shadowHover : shadowRest}`,
         transform: hovered ? "translateY(-4px)" : "none",
         transition: "box-shadow 0.3s ease, transform 0.3s ease",
         marginBottom: "20px", position: "relative", overflow: "hidden",
       }}
     >
+      {lensSvg}
       {/* Specular highlight */}
       <div style={{
         position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none", zIndex: 0,
@@ -172,7 +180,7 @@ export function FeatureCard({ children }) {
 export const SITE_CSS = `
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=VT323&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        h1, h2, h3 { font-synthesis: none; }
+        h1, h2, h3 { font-synthesis: none; white-space: nowrap; min-width: 0; }
         ::selection { background: rgba(0,255,65,0.2); color: #00ff41; }
         html { scroll-behavior: smooth; }
         a { color: inherit; text-decoration: none; }
@@ -351,6 +359,11 @@ export const SITE_CSS = `
             radial-gradient(80% 70% at 85% 110%, rgba(255,255,255,0.10), transparent 60%);
         }
         .lg-label { position: relative; }
+        .lg-btn-sm { padding: 10px 22px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+        .glass-card, .feature-card {
+          -webkit-backdrop-filter: blur(22px) saturate(180%);
+          backdrop-filter: var(--lens, blur(22px)) saturate(170%) brightness(1.08);
+        }
         @media (hover: hover) {
           .lg-btn:hover {
             transform: scale(1.04);
@@ -392,7 +405,6 @@ export const SITE_CSS = `
           /* lighter blur keeps scrolling smooth on phones */
           .glass-card, .feature-card { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
           .hero-name { letter-spacing: -1.5px; }
-          .exp-title { font-size: 24px !important; }
           .exp-icon { width: 40px !important; height: 40px !important; font-size: 24px !important; }
 
           #home { padding: 0 18px !important; }
@@ -463,12 +475,14 @@ export function SiteStyles() {
   return <style>{SITE_CSS}</style>;
 }
 
-/* ── Liquid glass button ─────────────────────────────────────────
-   Refracts what is behind it instead of blurring it. A displacement
-   map sized to the button bends the backdrop near the edges like a
-   glass lens (Chromium); other browsers get a clear glass pill. */
-function lensMap(w, h) {
+/* ── Liquid glass ────────────────────────────────────────────────
+   Refracts what is behind an element instead of blurring it. A
+   displacement map sized to the element bends the backdrop near its
+   edges like a glass lens (Chromium). Other browsers fall back to the
+   blur set in CSS. Used by every button and card on the site. */
+function lensMap(w, h, radius) {
   const inset = Math.min(h * 0.32, 16);
+  const rx = radius == null ? (h - inset * 2) / 2 : Math.max(radius - inset, 4);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
     <defs>
       <linearGradient id="r" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#f00"/></linearGradient>
@@ -477,13 +491,14 @@ function lensMap(w, h) {
     </defs>
     <rect width="${w}" height="${h}" fill="url(#r)"/>
     <rect width="${w}" height="${h}" fill="url(#g)" style="mix-blend-mode:screen"/>
-    <rect x="${inset}" y="${inset}" width="${w - inset * 2}" height="${h - inset * 2}" rx="${(h - inset * 2) / 2}" fill="#808080" filter="url(#b)"/>
+    <rect x="${inset}" y="${inset}" width="${w - inset * 2}" height="${h - inset * 2}" rx="${rx}" fill="#808080" filter="url(#b)"/>
   </svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
-export function LiquidButton({ children, onClick, href = "#" }) {
-  const ref = useRef(null);
+// radius: corner radius in px, or null for a pill. Returns the style that
+// points backdrop-filter at the lens, and the SVG filter to render inside.
+export function useLens(ref, radius = null) {
   const [size, setSize] = useState({ w: 0, h: 0 });
   const id = `lens-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 
@@ -493,26 +508,64 @@ export function LiquidButton({ children, onClick, href = "#" }) {
     const ro = new ResizeObserver(() => setSize({ w: Math.round(el.offsetWidth), h: Math.round(el.offsetHeight) }));
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [ref]);
 
+  if (!size.w || !size.h) return [undefined, null];
+  const lensStyle = { "--lens": `url(#${id})` };
+  const lensSvg = (
+    <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+      <filter id={id} x="0" y="0" width={size.w} height={size.h} filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+        <feImage href={lensMap(size.w, size.h, radius)} x="0" y="0" width={size.w} height={size.h} preserveAspectRatio="none" result="map" />
+        <feDisplacementMap in="SourceGraphic" in2="map" scale={Math.round(Math.min(size.h * 0.7, 48))} xChannelSelector="R" yChannelSelector="G" result="bent" />
+        <feColorMatrix in="bent" type="saturate" values="1.25" />
+      </filter>
+    </svg>
+  );
+  return [lensStyle, lensSvg];
+}
+
+// Any link styled as a liquid glass button. onClick (if given) replaces navigation.
+export function LiquidButton({ children, onClick, href = "#", external = false, download, small = false }) {
+  const ref = useRef(null);
+  const [lensStyle, lensSvg] = useLens(ref);
   return (
     <a
       ref={ref}
       href={href}
-      className="lg-btn"
+      className={`lg-btn${small ? " lg-btn-sm" : ""}`}
+      download={download}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       onClick={(e) => { if (onClick) { e.preventDefault(); onClick(); } }}
-      style={size.w ? { "--lens": `url(#${id})` } : undefined}
+      style={lensStyle}
     >
-      {size.w > 0 && (
-        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
-          <filter id={id} x="0" y="0" width={size.w} height={size.h} filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feImage href={lensMap(size.w, size.h)} x="0" y="0" width={size.w} height={size.h} preserveAspectRatio="none" result="map" />
-            <feDisplacementMap in="SourceGraphic" in2="map" scale={Math.round(size.h * 0.7)} xChannelSelector="R" yChannelSelector="G" result="bent" />
-            <feColorMatrix in="bent" type="saturate" values="1.25" />
-          </filter>
-        </svg>
-      )}
+      {lensSvg}
       <span className="lg-label">{children}</span>
     </a>
   );
+}
+
+// Keeps every heading on one line: if a heading is wider than its box,
+// its font size is scaled down just enough to fit. Reruns on resize and
+// once the web fonts finish loading.
+export function useFitHeadings() {
+  useEffect(() => {
+    let timer = 0;
+    const fit = () => {
+      document.querySelectorAll("h1, h2, h3").forEach((h) => {
+        if (h.dataset.fs === undefined) h.dataset.fs = h.style.fontSize || "";
+        h.style.fontSize = h.dataset.fs;
+        const room = h.clientWidth;
+        const need = h.scrollWidth;
+        if (room > 0 && need > room) {
+          const size = parseFloat(getComputedStyle(h).fontSize);
+          h.style.fontSize = `${Math.floor((size * room) / need * 10) / 10}px`;
+        }
+      });
+    };
+    const schedule = () => { clearTimeout(timer); timer = setTimeout(fit, 30); };
+    schedule();
+    document.fonts?.ready.then(schedule);
+    window.addEventListener("resize", schedule);
+    return () => { clearTimeout(timer); window.removeEventListener("resize", schedule); };
+  }, []);
 }
