@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
-import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles } from "./theme.jsx";
+import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, GridBackground } from "./theme.jsx";
 
 const NAV_LINKS = ["home", "skills", "experience", "projects", "contact"];
 
@@ -120,12 +120,7 @@ export default function Portfolio() {
       {/* Y2K x Matrix cursor: glow torch + pixel arrow + glyph trail */}
       <MatrixCursor />
 
-      {/* Background grid */}
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-        backgroundImage: `linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px)`,
-        backgroundSize: "60px 60px",
-      }} />
+      <GridBackground />
 
       {/* BRAND — small fixed mark, top-left, gains a glass backing once scrolled */}
       <div style={{
@@ -166,15 +161,7 @@ export default function Portfolio() {
             <span className="dot" />Senior @ UWM · CS with Honors
           </div>
 
-          <h1 className="hero-name" style={{
-            fontFamily: "'Syne', sans-serif",
-            fontWeight: 800, lineHeight: 1.0,
-            background: `linear-gradient(135deg, #ccffcc 20%, ${M.bright} 60%, ${M.mid} 100%)`,
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            marginBottom: "24px",
-          }}>
-            Gourilakshmi<br />Neerajkumar
-          </h1>
+          <h1 className="name-pixel">Gourilakshmi<br />Neerajkumar</h1>
 
           <p style={{ fontSize: "17px", color: M.dim, maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.7, fontWeight: 300 }}>
             Call me gouri.<br /> I build things and occassionally break things- usually on purpose ;)
@@ -225,28 +212,28 @@ export default function Portfolio() {
           <div className="grid-2">
             <FadeIn delay={0.1}>
               <Card>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "12px", color: M.bright }}>Languages</h3>
+                <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "12px", color: M.bright }}>Languages</h3>
                 <SkillList items={LANGUAGES} />
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", margin: "28px 0 12px", color: M.bright }}>Architecture & Performance</h3>
+                <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", margin: "28px 0 12px", color: M.bright }}>Architecture & Performance</h3>
                 <SkillList items={ARCH_SKILLS} />
               </Card>
             </FadeIn>
             <FadeIn delay={0.2}>
               <Card style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Hardware & Embedded</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Hardware & Embedded</h3>
                   {["Arduino Uno", "Raspberry Pi", "PIC24 Microcontroller", "MPLAB X", "PICKIT3", "ARM Linux Controllers", "Access Control (SIOs, Readers, Locks)"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Domains</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Domains</h3>
                   {["Embedded Systems", "Quality Assurance", "Software Dev", "Web Dev", "Graph Theory", "AI"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>QA & DevOps</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>QA & DevOps</h3>
                   {["pytest", "GitHub Actions", "Jenkins", "SonarQube", "TestRail", "Jira", "Bitbucket", "Grafana"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Tools</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Tools</h3>
                   {["Git", "Linux", "Docker", "QEMU", "MQTT", "Wireshark", "Django", "React", "LaTeX"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
               </Card>
@@ -278,7 +265,7 @@ export default function Portfolio() {
                     }}>
                       {exp.icon}
                     </div>
-                    <h3 className="exp-title" style={{ fontFamily: "'Syne', sans-serif", fontSize: "21px", fontWeight: 700, color: M.bright }}>{exp.title}</h3>
+                    <h3 className="exp-title" style={{ fontFamily: "'VT323', monospace", fontSize: "28px", color: M.bright }}>{exp.title}</h3>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: "4px 16px", marginBottom: "12px" }}>
                     <p style={{ fontSize: "13px", color: M.dim, fontFamily: "'Space Mono', monospace" }}>{exp.org}</p>
@@ -308,7 +295,7 @@ export default function Portfolio() {
           <FadeIn delay={0.1}>
             <FeatureCard>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🏅 UWM · 2023–Present</div>
-              <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>Dean's List Student</h3>
+              <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "35px", marginBottom: "12px", color: M.bright }}>Dean's List Student</h3>
               <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px", marginBottom: "16px" }}>
                 Consistent academic excellence over full-time coursework, <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher every semester.</strong>
               </p>
@@ -350,7 +337,7 @@ export default function Portfolio() {
               <FadeIn key={p.title} delay={0.2 + i * 0.05}>
                 <Card>
                   <div style={{ fontSize: "28px", marginBottom: "16px" }}>{p.icon}</div>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", marginBottom: "10px", color: M.bright }}>{p.title}</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "23px", marginBottom: "10px", color: M.bright }}>{p.title}</h3>
                   <p style={{ fontSize: "14px", color: M.textSec, lineHeight: 1.65 }}>{p.desc}</p>
                   <div style={{ marginTop: "16px" }}>{p.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
                   {p.link && <a className="repo-link" href={p.link} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}

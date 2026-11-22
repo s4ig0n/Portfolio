@@ -170,8 +170,9 @@ export function FeatureCard({ children }) {
 }
 
 export const SITE_CSS = `
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=VT323&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        h1, h2, h3 { font-synthesis: none; }
         ::selection { background: rgba(0,255,65,0.2); color: #00ff41; }
         html { scroll-behavior: smooth; }
         a { color: inherit; text-decoration: none; }
@@ -289,10 +290,11 @@ export const SITE_CSS = `
 
         .section { max-width: 900px; margin: 0 auto; padding: 80px 24px; }
         .section-title {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(32px, 5vw, 52px);
-          font-weight: 800;
-          letter-spacing: -1px;
+          font-family: 'VT323', monospace;
+          font-size: clamp(42px, 6.5vw, 68px);
+          font-weight: 400;
+          letter-spacing: 0;
+          line-height: 0.95;
           margin-bottom: 8px;
           color: #00ff41;
         }
@@ -309,11 +311,24 @@ export const SITE_CSS = `
         .hero { min-height: 100vh; min-height: 100svh; }
         .hero-name { font-size: clamp(30px, 9vw, 90px); letter-spacing: -3px; overflow-wrap: break-word; }
 
+        /* Home hero name: pixel serif */
+        .name-pixel { margin-bottom: 24px; }
+
+
+        .name-pixel {
+          position: relative;
+          font-family: 'VT323', monospace; font-weight: 400;
+          font-size: clamp(52px, 12.5vw, 140px); line-height: 0.86; letter-spacing: 0;
+          background: linear-gradient(135deg, #ccffcc 20%, #f5f5f5 60%, #c9c9c9 100%);
+          -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 0 18px rgba(0,255,65,0.18));
+        }
+
         /* Between: compact banner under Dean's List */
         .banner-row { display: flex; align-items: center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; }
         .banner-main { flex: 1 1 320px; min-width: 0; }
         .banner-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; color: #c9c9c9; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
-        .banner-main h3 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #f5f5f5; margin-bottom: 6px; }
+        .banner-main h3 { font-family: 'VT323', monospace; font-size: 30px; font-weight: 400; line-height: 1; color: #f5f5f5; margin-bottom: 6px; }
         .banner-main p { font-size: 14px; color: #b5b5b5; line-height: 1.6; }
         .status-pill {
           display: inline-flex; align-items: center; white-space: nowrap;
@@ -343,7 +358,7 @@ export const SITE_CSS = `
           /* lighter blur keeps scrolling smooth on phones */
           .glass-card, .feature-card { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
           .hero-name { letter-spacing: -1.5px; }
-          .exp-title { font-size: 18px !important; }
+          .exp-title { font-size: 24px !important; }
           .exp-icon { width: 40px !important; height: 40px !important; font-size: 24px !important; }
 
           #home { padding: 0 18px !important; }
@@ -399,6 +414,16 @@ export const SITE_CSS = `
           .site-footer { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
         }
 `;
+
+export function GridBackground() {
+  return (
+    <div aria-hidden="true" style={{
+      position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+      backgroundImage: "linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px)",
+      backgroundSize: "60px 60px",
+    }} />
+  );
+}
 
 export function SiteStyles() {
   return <style>{SITE_CSS}</style>;

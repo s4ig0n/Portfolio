@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
-import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles } from "./theme.jsx";
+import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, GridBackground } from "./theme.jsx";
 
 const ASSETS = `${import.meta.env.BASE_URL}projects/overclocked`;
 const GITHUB_URL = "https://github.com/ALL-Applied-AI-Network/overclocked";
@@ -70,7 +70,7 @@ function SectionHeader({ index, label, title }) {
   );
 }
 
-const cardTitle = { fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "10px", color: M.bright };
+const cardTitle = { fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "10px", color: M.bright };
 const cardText = { fontSize: "14px", color: M.textSec, lineHeight: 1.65 };
 const caption = { fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.dim, marginTop: "12px", lineHeight: 1.6 };
 const twoCol = { gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" };
@@ -112,11 +112,7 @@ export default function OverclockedProject() {
       <SiteStyles />
       <MatrixCursor />
 
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-        backgroundImage: "linear-gradient(rgba(0,255,65,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,65,0.04) 1px, transparent 1px)",
-        backgroundSize: "60px 60px",
-      }} />
+      <GridBackground />
 
       {/* Brand mark, same as the home page; links back to projects */}
       <a href="#projects" aria-label="Back to portfolio projects" style={{
@@ -148,13 +144,7 @@ export default function OverclockedProject() {
             <span className="dot" />NVIDIA + Rockwell Automation Hackathon · Nov 2026
           </div>
 
-          <h1 className="hero-name" style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 800, lineHeight: 1.0,
-            background: `linear-gradient(135deg, #ccffcc 20%, ${M.bright} 60%, ${M.mid} 100%)`,
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: "24px",
-          }}>
-            Overclocked
-          </h1>
+          <h1 className="name-pixel">Overclocked</h1>
 
           <p style={{ fontSize: "17px", color: M.dim, maxWidth: 560, margin: "0 auto 36px", lineHeight: 1.7, fontWeight: 300 }}>
             Vision-guided pick and place on a real FANUC robot cell.<br />It checks every grasp and looks again after a miss.
@@ -233,7 +223,7 @@ export default function OverclockedProject() {
           <FadeIn delay={0.1}>
             <FeatureCard>
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🎯 REAL CELL · TEAM RESULT</div>
-              <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>12 of 12 cubes placed</h3>
+              <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "35px", marginBottom: "12px", color: M.bright }}>12 of 12 cubes placed</h3>
               <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px" }}>
                 With stale calibration, 0 of 3 runs finished and the controller faulted three times. The camera-to-gripper offset had drifted about 13 mm between test days. <strong style={{ color: M.bright }}>After recalibrating, the system placed all 12 cubes across three clean runs.</strong>
               </p>
@@ -243,7 +233,7 @@ export default function OverclockedProject() {
             {STATS.slice(1).map((s, i) => (
               <FadeIn key={s.value} delay={0.15 + i * 0.05}>
                 <Card style={{ height: "100%" }}>
-                  <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "8px", color: "#00ff41" }}>{s.value}</h3>
+                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "35px", marginBottom: "8px", color: "#00ff41" }}>{s.value}</h3>
                   <p style={cardText}>{s.label}</p>
                 </Card>
               </FadeIn>
