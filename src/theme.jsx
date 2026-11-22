@@ -377,6 +377,10 @@ export const SITE_CSS = `
           }
         }
         .lg-btn:active { transform: scale(0.97); }
+        .about-split { display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; align-items: start; }
+        @media (max-width: 760px) { .about-split { grid-template-columns: 1fr; } }
+        .about-term-row { display: grid; grid-template-columns: 96px 1fr; gap: 10px; }
+        @media (max-width: 600px) { .about-term-row { grid-template-columns: 1fr; gap: 0; margin-bottom: 6px; } }
         .status-pill {
           display: inline-flex; align-items: center; white-space: nowrap;
           padding: 6px 14px; border-radius: 999px;
@@ -405,7 +409,6 @@ export const SITE_CSS = `
           /* lighter blur keeps scrolling smooth on phones */
           .glass-card, .feature-card { backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; }
           .hero-name { letter-spacing: -1.5px; }
-          .exp-icon { width: 40px !important; height: 40px !important; font-size: 24px !important; }
 
           #home { padding: 0 18px !important; }
 

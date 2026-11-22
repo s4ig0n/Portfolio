@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
+import PixelIcon from "./PixelIcon.jsx";
 import { M, liquidBlur, useFitHeadings, FadeIn, Card, FeatureCard, SiteStyles, LiquidButton, GridBackground } from "./theme.jsx";
 
 const ASSETS = `${import.meta.env.BASE_URL}projects/overclocked`;
@@ -14,10 +15,10 @@ const NAV = [
 ];
 
 const STEPS = [
-  { icon: "👀", title: "Look", desc: "Table, wrist, and side cameras find a part and the destination bin. Color and silhouette detection runs first, with OWLv2 open-vocabulary detection on an NVIDIA DGX Spark." },
-  { icon: "🤏", title: "Pick", desc: "The wrist RGB-D camera refines where the gripper should close before the FANUC ER-4iA moves in." },
-  { icon: "✅", title: "Check", desc: "A side camera and a classifier on frozen NVIDIA C-RADIOv2 features decide whether the part is actually held before it gets carried." },
-  { icon: "🔁", title: "Look again", desc: "If the grasp looks empty, the arm skips the carry, looks at the table again, and retries. Dropped and hand-moved cubes get picked back up." },
+  { title: "Look", desc: "Table, wrist, and side cameras find a part and the destination bin. Color and silhouette detection runs first, with OWLv2 open-vocabulary detection on an NVIDIA DGX Spark." },
+  { title: "Pick", desc: "The wrist RGB-D camera refines where the gripper should close before the FANUC ER-4iA moves in." },
+  { title: "Check", desc: "A side camera and a classifier on frozen NVIDIA C-RADIOv2 features decide whether the part is actually held before it gets carried." },
+  { title: "Look again", desc: "If the grasp looks empty, the arm skips the carry, looks at the table again, and retries. Dropped and hand-moved cubes get picked back up." },
 ];
 
 const STATS = [
@@ -133,14 +134,12 @@ export default function OverclockedProject() {
           <div className="grid-2" style={twoCol}>
             <FadeIn delay={0.1}>
               <Card>
-                <div style={{ fontSize: "28px", marginBottom: "16px" }}>📍</div>
                 <h3 style={cardTitle}>Taught positions break</h3>
                 <p style={cardText}>A fixed pick position works until a part lands a few millimeters off, a fixture moves, or a camera gets bumped. Then you get a silent miss, a controller fault, or another round of manual re-teaching.</p>
               </Card>
             </FadeIn>
             <FadeIn delay={0.2}>
               <Card>
-                <div style={{ fontSize: "28px", marginBottom: "16px" }}>🧑‍💻</div>
                 <h3 style={cardTitle}>What I did</h3>
                 <p style={cardText}>Led Team Overclocked and wrote the Python pick-and-place policies: picking and placing, missed-grasp detection, and depth measurement. The policy checks whether a part is held before carrying it, and re-observes and retries when it isn't.</p>
               </Card>
@@ -162,7 +161,6 @@ export default function OverclockedProject() {
             {STEPS.map((s, i) => (
               <FadeIn key={s.title} delay={0.1 + i * 0.05}>
                 <Card style={{ height: "100%" }}>
-                  <div style={{ fontSize: "28px", marginBottom: "16px" }}>{s.icon}</div>
                   <h3 style={cardTitle}>{s.title}</h3>
                   <p style={cardText}>{s.desc}</p>
                 </Card>
@@ -177,7 +175,6 @@ export default function OverclockedProject() {
           </FadeIn>
           <FadeIn delay={0.25}>
             <Card style={{ marginTop: "20px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "16px" }}>🧪</div>
               <h3 style={cardTitle}>Simulation first, then the real cell</h3>
               <p style={cardText}>We started with reinforcement learning in NVIDIA Isaac Sim, launched on Brev, plus mock scenes for geometry and safety checks. The simulated behavior didn't carry over to the arm, so final development and every number on this page come from the physical cell.</p>
             </Card>
@@ -191,7 +188,7 @@ export default function OverclockedProject() {
           <SectionHeader index="03" label="results" title="Results on Real Hardware" />
           <FadeIn delay={0.1}>
             <FeatureCard>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🎯 REAL CELL · TEAM RESULT</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}><PixelIcon name="bullseye" size={14} style={{ marginRight: 8, marginTop: -2 }} />REAL CELL · TEAM RESULT</div>
               <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "35px", marginBottom: "12px", color: M.bright }}>12 of 12 cubes placed</h3>
               <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px" }}>
                 With stale calibration, 0 of 3 runs finished and the controller faulted three times. The camera-to-gripper offset had drifted about 13 mm between test days. <strong style={{ color: M.bright }}>After recalibrating, the system placed all 12 cubes across three clean runs.</strong>
@@ -222,7 +219,6 @@ export default function OverclockedProject() {
           </div>
           <FadeIn delay={0.2}>
             <Card style={{ marginTop: "20px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "16px" }}>⚠️</div>
               <h3 style={cardTitle}>Limits</h3>
               <p style={cardText}>One staged empty grasp still passed the check. Screws and a hex key didn't fit the gripper jaws, and batteries only picked some of the time. Recalibrating after a change was still manual, and every trial ran on one cell with someone watching. It's a working prototype, not a production system.</p>
             </Card>
