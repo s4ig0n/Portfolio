@@ -3,14 +3,9 @@ import MatrixCursor from "./MatrixCursor.jsx";
 
 const NAV_LINKS = ["home", "skills", "experience", "projects", "contact"];
 
-const SKILLS = [
-  { name: "Python", level: 95 },
-  { name: "Django", level: 90 },
-  { name: "C/C++", level: 75 },
-  { name: "Java", level: 70 },
-  { name: "SQL/MySQL", level: 80 },
-  { name: "HTML/CSS", level: 90 },
-];
+const LANGUAGES = ["C", "C++", "Python", "Java", "Bash", "MIPS Assembly", "TypeScript", "SQL (MySQL, SQLite)", "HTML/CSS"];
+
+const ARCH_SKILLS = ["Cache and memory hierarchy", "SIMD (AVX2, FMA)", "MESI cache coherence", "Benchmarking and performance modeling", "RISC-V (xv6 kernel)", "Valgrind, CMake"];
 
 const EXPERIENCES = [
   {
@@ -32,9 +27,9 @@ const EXPERIENCES = [
   {
     title: "Undergraduate Researcher – Graph Theory",
     org: "Dept. of Mathematical Sciences, UWM · MAA, NSF",
-    period: "May 2025 – Aug 2025",
+    period: "May 2025 – Spring 2026",
     tags: ["Graph Theory", "MATLAB", "Academic Writing", "LaTeX"],
-    desc: "Researched Truncated Square Graphs with a focus on Total Restricted Broadcast Domination, working on questions proposed by J. Cervantes and P. Harris. Analyzed single-vertex broadcasts, eccentricity, and graph connectivity relationships.",
+    desc: "Researched Truncated Square Graphs with a focus on Total Restricted Broadcast Domination, working on questions proposed by J. Cervantes and P. Harris. Analyzed single-vertex broadcasts, eccentricity, and graph connectivity relationships, and presented the findings at a conference in Fall 2025. A paper on the final results is in progress.",
     icon: "📊",
   },
   {
@@ -46,16 +41,19 @@ const EXPERIENCES = [
     icon: "🤖",
   },
   {
-    title: "SURF Recipient (Two-Time)",
+    title: "SURF Recipient (Three-Time)",
     org: "College of Engineering & Applied Sciences, UWM",
-    period: "Sep 2023 – Dec 2024",
-    tags: ["PIC24", "MPLAB X", "Embedded Systems", "LC-3", "Testing"],
-    desc: "Advanced a Solar Sculpture that harvests sunlight by day and drives visual light performances at night using a PIC24 microcontroller and circuit debugger in MPLAB X on Linux. In the second term, tested and debugged an LC-3 visualization tool and wrote its documentation and user manual.",
+    period: "Sep 2023 – Spring 2026",
+    tags: ["PIC24", "MPLAB X", "Embedded Systems", "LC-3", "Testing", "Graph Theory"],
+    desc: "First award: wrote bare-metal C firmware for a PIC24 on a solar sculpture that stores sunlight by day and drives light performances at night, working from circuit schematics with a circuit debugger in MPLAB X on Linux. Second award: tested and debugged an LC-3 visualization tool and wrote its documentation and user manual. Third award: funded the continuation of my graph theory research through Spring 2026.",
     icon: "☀️",
   },
 ];
 
 const PROJECTS = [
+  { icon: "🧠", title: "Cache Simulator", link: "https://github.com/s4ig0n/Cache-Simulator", desc: "C++ cache simulator that replays Valgrind traces of real C programs. Configurable size, block size, and associativity, LRU and FIFO, write-back and write-through, an optional L2, and multi-core MESI coherence. Matches Cachegrind's L1 miss counts within 0.06% across 16 configurations, with 33 checks running in CI.", tags: ["C++", "Valgrind", "MESI", "Python", "GitHub Actions"] },
+  { icon: "⚡", title: "eight-wide", link: "https://github.com/s4ig0n/eight-wide", desc: "AVX2/FMA matrix multiply in C, benchmarked against naive and cache-friendly scalar kernels at N=512. Loop order gave 3.7x, SIMD another 3.9x, and 128×128 cache blocking took it to 17.8x over naive (1.64 to 29.15 GFLOP/s).", tags: ["C", "AVX2", "FMA", "CMake"] },
+  { icon: "🧪", title: "MQTT Device Test Harness", link: "https://github.com/s4ig0n/mqtt-device-test-harness", desc: "47 pytest tests for a simulated MQTT thermostat, driven only through its messaging interface: connection lifecycle, Last Will, JSON Schema telemetry, command edge cases, and fault injection. Found a retained-message bug in the amqtt broker that violates MQTT 3.1.1 and fixed two race conditions behind flaky tests.", tags: ["Python", "pytest", "MQTT", "JSON Schema", "CI"] },
   { icon: "📡", title: "MQTT File Transfer Pipeline", desc: "Cross-architecture pipeline between an x64 Windows host and an ARM-based Linux access controller, deployed with Docker and QEMU. JSON messages carry file metadata, and the controller bundles requested files into a single tar archive that downloads automatically to the PC.", tags: ["MQTT", "Docker", "QEMU", "ARM Linux"] },
   { icon: "🗓️", title: "Scheduling Management Web App", desc: "Role-based scheduling system with dedicated dashboards for students, TAs, instructors, and admins. Built the Django backend and responsive Bootstrap UI in a scrum-based team.", tags: ["Django", "Bootstrap", "Python", "Agile"] },
   { icon: "🧮", title: "LC-3 Visualization Tool", desc: "Tested and debugged an educational LC-3 visualization tool as a SURF fellow, and wrote its project documentation and user manual.", tags: ["LC-3", "Testing", "Documentation"] },
@@ -131,29 +129,11 @@ function FadeIn({ children, delay = 0, className = "" }) {
   );
 }
 
-function SkillBar({ name, level, delay }) {
-  const ref = useRef(null);
-  const visible = useIntersection(ref);
+function SkillList({ items }) {
   return (
-    <div ref={ref} style={{ marginBottom: "18px" }}>
-      <div style={{
-        display: "flex", justifyContent: "space-between",
-        marginBottom: "6px", fontFamily: "'Space Mono', monospace", fontSize: "13px",
-      }}>
-        <span style={{ color: M.bright }}>{name}</span>
-        <span style={{ color: M.mid }}>{level}%</span>
-      </div>
-      <div style={{ background: M.dark, borderRadius: "4px", height: "6px", overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          width: visible ? `${level}%` : "0%",
-          background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`,
-          borderRadius: "4px",
-          transition: `width 1.2s cubic-bezier(.4,0,.2,1) ${delay}s`,
-          boxShadow: `0 0 12px ${M.bright}55`,
-        }} />
-      </div>
-    </div>
+    <ul className="plain-list">
+      {items.map((s) => <li key={s}>{s}</li>)}
+    </ul>
   );
 }
 
@@ -264,6 +244,12 @@ export default function Portfolio() {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    if (window.location.hash === "#projects") {
+      requestAnimationFrame(() => document.getElementById("projects")?.scrollIntoView());
+    }
   }, []);
 
   // ── ScrollSpy: watches a thin band across the vertical center of the
@@ -421,6 +407,11 @@ export default function Portfolio() {
           margin-bottom: 8px;
           color: #00ff41;
         }
+        .plain-list { list-style: none; font-family: 'Space Mono', monospace; font-size: 13px; color: #f5f5f5; }
+        .plain-list li { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .plain-list li:last-child { border-bottom: none; }
+        .repo-link { display: inline-block; margin-top: 14px; font-family: 'Space Mono', monospace; font-size: 12px; color: #00b300; transition: color 0.2s; }
+        .repo-link:hover { color: #00ff41; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         /* ── Layout helpers ─────────────────────────────────── */
         a, button { -webkit-tap-highlight-color: transparent; }
@@ -628,12 +619,10 @@ export default function Portfolio() {
           <div className="grid-2">
             <FadeIn delay={0.1}>
               <Card>
-                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "28px", color: M.bright }}>Proficiency</h3>
-                {SKILLS.map((s, i) => <SkillBar key={s.name} {...s} delay={i * 0.08} />)}
-                <div style={{ marginTop: "22px" }}>
-                  <p style={{ fontFamily: "'Space Mono', monospace", fontSize: "12px", color: M.dim, marginBottom: "8px" }}>Also working with</p>
-                  {["MATLAB", "Assembly", "Bootstrap"].map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "12px", color: M.bright }}>Languages</h3>
+                <SkillList items={LANGUAGES} />
+                <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", margin: "28px 0 12px", color: M.bright }}>Architecture & Performance</h3>
+                <SkillList items={ARCH_SKILLS} />
               </Card>
             </FadeIn>
             <FadeIn delay={0.2}>
@@ -648,11 +637,11 @@ export default function Portfolio() {
                 </div>
                 <div>
                   <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>QA & DevOps</h3>
-                  {["Jenkins", "SonarQube", "TestRail", "Jira", "Bitbucket"].map(t => <span key={t} className="tag">{t}</span>)}
+                  {["pytest", "GitHub Actions", "Jenkins", "SonarQube", "TestRail", "Jira", "Bitbucket", "Grafana"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
                 <div>
                   <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "18px", marginBottom: "8px", color: M.bright }}>Tools</h3>
-                  {["Git", "Linux", "Docker", "QEMU", "MQTT", "LaTeX"].map(t => <span key={t} className="tag">{t}</span>)}
+                  {["Git", "Linux", "Docker", "QEMU", "MQTT", "Wireshark", "Django", "React", "LaTeX"].map(t => <span key={t} className="tag">{t}</span>)}
                 </div>
               </Card>
             </FadeIn>
@@ -715,7 +704,7 @@ export default function Portfolio() {
               <div style={{ fontFamily: "'Space Mono', monospace", fontSize: "11px", color: M.mid, letterSpacing: "2px", marginBottom: "16px" }}>🏅 UWM · 2023–Present</div>
               <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "26px", fontWeight: 800, marginBottom: "12px", color: M.bright }}>Dean's List Student</h3>
               <p style={{ color: M.textSec, lineHeight: 1.7, maxWidth: "600px", marginBottom: "16px" }}>
-                Consistent academic excellence over fulltime coursework — <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher every semester.</strong>
+                Consistent academic excellence over full-time coursework, <strong style={{ color: M.bright }}>maintaining a GPA of 3.7 or higher every semester.</strong>
               </p>
               {/* <span className="tag">Academic Excellence</span>
               <span className="tag">Full-time Student</span>
@@ -737,6 +726,22 @@ export default function Portfolio() {
             </Card>
           </FadeIn>
 
+          <FadeIn delay={0.2}>
+            <div className="oc-feature-banner">
+              <div className="oc-feature-copy">
+                <div className="oc-feature-eyebrow">Rockwell Automation + NVIDIA · Physical AI Hackathon · 2026</div>
+                <h3>Overclocked</h3>
+                <p>A perception-driven FANUC pick-and-place system that finds loose parts, verifies each grasp, and looks again after a miss.</p>
+                <div className="oc-feature-meta">
+                  <span>12 of 12 cubes placed</span>
+                  <span>Multi-camera vision</span>
+                  <span>Recovery loop</span>
+                </div>
+                <a className="oc-button oc-button-primary" href="#/projects/overclocked">View Project <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </FadeIn>
+
           <div className="grid-2">
             {PROJECTS.map((p, i) => (
               <FadeIn key={p.title} delay={0.2 + i * 0.05}>
@@ -745,6 +750,7 @@ export default function Portfolio() {
                   <h3 style={{ fontFamily: "'Syne', sans-serif", fontSize: "17px", marginBottom: "10px", color: M.bright }}>{p.title}</h3>
                   <p style={{ fontSize: "14px", color: M.textSec, lineHeight: 1.65 }}>{p.desc}</p>
                   <div style={{ marginTop: "16px" }}>{p.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
+                  {p.link && <a className="repo-link" href={p.link} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}
                 </Card>
               </FadeIn>
             ))}
@@ -758,7 +764,7 @@ export default function Portfolio() {
           <FadeIn>
             <p style={{ fontFamily: "'Space Mono', monospace", color: M.mid, fontSize: "11px", letterSpacing: "3px", textTransform: "uppercase", marginBottom: "16px" }}>05 / contact</p>
             <h2 className="section-title" style={{ marginBottom: "16px" }}>Intrigued? <br/> Let's Connect</h2>
-            <p style={{ color: M.dim, marginBottom: "40px", fontSize: "15px" }}>Open to internships, research, and cool projects.</p>
+            <p style={{ color: M.dim, marginBottom: "40px", fontSize: "15px" }}>Graduating May 2027. Open to full-time roles starting in 2027, research, and cool projects.</p>
             <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
               <a href="mailto:neerajk2@uwm.edu" style={{
                 padding: "14px 32px", borderRadius: "12px",
