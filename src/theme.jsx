@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 // Shared look for every page: palette, glass cards, fade-in, and the site CSS.
 // App.jsx and OverclockedProject.jsx both import from here so they stay identical.
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 
 // ── Matrix palette tokens ──────────────────────────────────────
 export const M = {
@@ -298,9 +298,6 @@ export const SITE_CSS = `
           margin-bottom: 8px;
           color: #00ff41;
         }
-        .plain-list { list-style: none; font-family: 'Space Mono', monospace; font-size: 13px; color: #f5f5f5; }
-        .plain-list li { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
-        .plain-list li:last-child { border-bottom: none; }
         .repo-link { display: inline-block; margin-top: 14px; font-family: 'Space Mono', monospace; font-size: 12px; color: #00b300; transition: color 0.2s; }
         .repo-link:hover { color: #00ff41; }
         .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
@@ -330,6 +327,43 @@ export const SITE_CSS = `
         .banner-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; color: #c9c9c9; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
         .banner-main h3 { font-family: 'VT323', monospace; font-size: 30px; font-weight: 400; line-height: 1; color: #f5f5f5; margin-bottom: 6px; }
         .banner-main p { font-size: 14px; color: #b5b5b5; line-height: 1.6; }
+        /* Liquid glass button: clear, refracting, no tint */
+        .lg-btn {
+          position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center;
+          padding: 15px 34px; border-radius: 999px; cursor: pointer;
+          font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: #f5f5f5;
+          background: rgba(255,255,255,0.035);
+          -webkit-backdrop-filter: blur(3px) saturate(150%);
+          backdrop-filter: var(--lens, blur(3px)) saturate(150%);
+          box-shadow:
+            inset 0 0 0 1px rgba(255,255,255,0.16),
+            inset 1.5px 1.5px 0 -0.5px rgba(255,255,255,0.55),
+            inset -1px -1px 0 -0.5px rgba(255,255,255,0.22),
+            inset 0 -12px 18px -10px rgba(255,255,255,0.10),
+            0 10px 28px rgba(0,0,0,0.45);
+          text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+          transition: transform 0.25s cubic-bezier(.3,1.4,.5,1), box-shadow 0.25s ease, background 0.25s ease;
+        }
+        .lg-btn::before {
+          content: ""; position: absolute; inset: 1px; border-radius: inherit; pointer-events: none; z-index: -1;
+          background:
+            radial-gradient(120% 90% at 20% 0%, rgba(255,255,255,0.22), transparent 55%),
+            radial-gradient(80% 70% at 85% 110%, rgba(255,255,255,0.10), transparent 60%);
+        }
+        .lg-label { position: relative; }
+        @media (hover: hover) {
+          .lg-btn:hover {
+            transform: scale(1.04);
+            background: rgba(255,255,255,0.06);
+            box-shadow:
+              inset 0 0 0 1px rgba(255,255,255,0.26),
+              inset 1.5px 1.5px 0 -0.5px rgba(255,255,255,0.7),
+              inset -1px -1px 0 -0.5px rgba(255,255,255,0.3),
+              inset 0 -12px 18px -10px rgba(255,255,255,0.16),
+              0 14px 36px rgba(0,0,0,0.5);
+          }
+        }
+        .lg-btn:active { transform: scale(0.97); }
         .status-pill {
           display: inline-flex; align-items: center; white-space: nowrap;
           padding: 6px 14px; border-radius: 999px;
@@ -427,4 +461,58 @@ export function GridBackground() {
 
 export function SiteStyles() {
   return <style>{SITE_CSS}</style>;
+}
+
+/* ── Liquid glass button ─────────────────────────────────────────
+   Refracts what is behind it instead of blurring it. A displacement
+   map sized to the button bends the backdrop near the edges like a
+   glass lens (Chromium); other browsers get a clear glass pill. */
+function lensMap(w, h) {
+  const inset = Math.min(h * 0.32, 16);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
+    <defs>
+      <linearGradient id="r" x1="0" x2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#f00"/></linearGradient>
+      <linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#0f0"/></linearGradient>
+      <filter id="b"><feGaussianBlur stdDeviation="${inset * 0.55}"/></filter>
+    </defs>
+    <rect width="${w}" height="${h}" fill="url(#r)"/>
+    <rect width="${w}" height="${h}" fill="url(#g)" style="mix-blend-mode:screen"/>
+    <rect x="${inset}" y="${inset}" width="${w - inset * 2}" height="${h - inset * 2}" rx="${(h - inset * 2) / 2}" fill="#808080" filter="url(#b)"/>
+  </svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+export function LiquidButton({ children, onClick, href = "#" }) {
+  const ref = useRef(null);
+  const [size, setSize] = useState({ w: 0, h: 0 });
+  const id = `lens-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setSize({ w: Math.round(el.offsetWidth), h: Math.round(el.offsetHeight) }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  return (
+    <a
+      ref={ref}
+      href={href}
+      className="lg-btn"
+      onClick={(e) => { if (onClick) { e.preventDefault(); onClick(); } }}
+      style={size.w ? { "--lens": `url(#${id})` } : undefined}
+    >
+      {size.w > 0 && (
+        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+          <filter id={id} x="0" y="0" width={size.w} height={size.h} filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feImage href={lensMap(size.w, size.h)} x="0" y="0" width={size.w} height={size.h} preserveAspectRatio="none" result="map" />
+            <feDisplacementMap in="SourceGraphic" in2="map" scale={Math.round(size.h * 0.7)} xChannelSelector="R" yChannelSelector="G" result="bent" />
+            <feColorMatrix in="bent" type="saturate" values="1.25" />
+          </filter>
+        </svg>
+      )}
+      <span className="lg-label">{children}</span>
+    </a>
+  );
 }

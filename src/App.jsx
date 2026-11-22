@@ -1,12 +1,9 @@
 import { useState, useEffect } from "react";
 import MatrixCursor from "./MatrixCursor.jsx";
-import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, GridBackground } from "./theme.jsx";
+import Skills from "./Skills.jsx";
+import { M, liquidBlur, shadowHover, FadeIn, Card, FeatureCard, SiteStyles, LiquidButton, GridBackground } from "./theme.jsx";
 
 const NAV_LINKS = ["home", "skills", "experience", "projects", "contact"];
-
-const LANGUAGES = ["C", "C++", "Python", "Java", "Bash", "MIPS Assembly", "TypeScript", "SQL (MySQL, SQLite)", "HTML/CSS"];
-
-const ARCH_SKILLS = ["Cache and memory hierarchy", "SIMD (AVX2, FMA)", "MESI cache coherence", "Benchmarking and performance modeling", "RISC-V (xv6 kernel)", "Valgrind, CMake"];
 
 const EXPERIENCES = [
   {
@@ -62,14 +59,6 @@ const PROJECTS = [
   { icon: "⚗️", title: "Wimshurst Machine Redesign", desc: "Modernized a classic electrostatic generator at Discovery World using Arduino and relay-based control, programmed in C++.", tags: ["Arduino", "C++", "Hardware"] },
   { icon: "🫐", title: "Elements Display (Raspberry Pi)", desc: "Rebuilt the periodic elements interactive display from scratch at Discovery World using a Raspberry Pi, programmed in Python.", tags: ["Raspberry Pi", "Python", "Linux"] },
 ];
-
-function SkillList({ items }) {
-  return (
-    <ul className="plain-list">
-      {items.map((s) => <li key={s}>{s}</li>)}
-    </ul>
-  );
-}
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("home");
@@ -168,33 +157,8 @@ export default function Portfolio() {
           </p>
 
           <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
-            <button onClick={() => scrollTo("experience")} style={{
-              padding: "14px 32px", borderRadius: "12px", border: `1px solid ${M.mid}`, cursor: "pointer",
-              background: "linear-gradient(135deg, rgba(0,100,0,0.7), rgba(0,179,0,0.5))",
-              backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
-              color: M.bright, fontWeight: 700, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-              letterSpacing: "0.5px", transition: "all 0.2s",
-              boxShadow: "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = shadowHover; e.currentTarget.style.borderColor = M.bright; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.18), 0 2px 0 0 rgba(0,255,65,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; e.currentTarget.style.borderColor = M.mid; }}
-            >
-              View Work →
-            </button>
-            <button onClick={() => scrollTo("contact")} style={{
-              padding: "14px 32px", borderRadius: "12px", cursor: "pointer",
-              border: `1px solid ${M.dim}`,
-              background: "linear-gradient(135deg, rgba(58,58,58,0.95), rgba(105,105,105,0.88))",
-              backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
-              color: M.bright, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
-              transition: "all 0.2s", display: "inline-block",
-              boxShadow: "0 0 0 0.5px rgba(255,255,255,0.18), 0 2px 0 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(80,80,80,0.95), rgba(135,135,135,0.9))"; e.currentTarget.style.borderColor = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg, rgba(58,58,58,0.95), rgba(105,105,105,0.88))"; e.currentTarget.style.borderColor = M.dim; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(255,255,255,0.18), 0 2px 0 0 rgba(255,255,255,0.12) inset, 0 8px 24px rgba(0,0,0,0.4)"; }}
-            >
-              Contact
-            </button>
+            <LiquidButton href="#experience" onClick={() => scrollTo("experience")}>View Work →</LiquidButton>
+            <LiquidButton href="#contact" onClick={() => scrollTo("contact")}>Contact</LiquidButton>
           </div>
         </div>
       </section>
@@ -209,36 +173,7 @@ export default function Portfolio() {
               <div style={{ width: "48px", height: "3px", background: `linear-gradient(90deg, ${M.mid}, ${M.bright})`, borderRadius: "2px", marginTop: "12px" }} />
             </div>
           </FadeIn>
-          <div className="grid-2">
-            <FadeIn delay={0.1}>
-              <Card>
-                <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "12px", color: M.bright }}>Languages</h3>
-                <SkillList items={LANGUAGES} />
-                <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", margin: "28px 0 12px", color: M.bright }}>Architecture & Performance</h3>
-                <SkillList items={ARCH_SKILLS} />
-              </Card>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <Card style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-                <div>
-                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Hardware & Embedded</h3>
-                  {["Arduino Uno", "Raspberry Pi", "PIC24 Microcontroller", "MPLAB X", "PICKIT3", "ARM Linux Controllers", "Access Control (SIOs, Readers, Locks)"].map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Domains</h3>
-                  {["Embedded Systems", "Quality Assurance", "Software Dev", "Web Dev", "Graph Theory", "AI"].map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>QA & DevOps</h3>
-                  {["pytest", "GitHub Actions", "Jenkins", "SonarQube", "TestRail", "Jira", "Bitbucket", "Grafana"].map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
-                <div>
-                  <h3 style={{ fontFamily: "'VT323', monospace", fontSize: "24px", marginBottom: "8px", color: M.bright }}>Tools</h3>
-                  {["Git", "Linux", "Docker", "QEMU", "MQTT", "Wireshark", "Django", "React", "LaTeX"].map(t => <span key={t} className="tag">{t}</span>)}
-                </div>
-              </Card>
-            </FadeIn>
-          </div>
+          <Skills />
         </div>
       </section>
 
@@ -398,7 +333,23 @@ export default function Portfolio() {
               onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
               onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
             >
-              Resume ↓
+              Resume (1 page) ↓
+            </a>
+            <a
+              href={`${import.meta.env.BASE_URL}resume/Gourilakshmi_Neerajkumar_CV.pdf`}
+              download="Gourilakshmi_Neerajkumar_CV.pdf"
+              style={{
+                padding: "14px 32px", borderRadius: "12px",
+                border: `1px solid ${M.glassBdr}`, background: M.glassBg,
+                backdropFilter: liquidBlur, WebkitBackdropFilter: liquidBlur,
+                color: M.mid, fontWeight: 600, fontSize: "14px", fontFamily: "'Space Mono', monospace",
+                transition: "all 0.2s", display: "inline-block",
+                boxShadow: "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = M.glassBgHov; e.currentTarget.style.borderColor = M.glassBdrHov; e.currentTarget.style.color = M.bright; e.currentTarget.style.boxShadow = shadowHover; }}
+              onMouseLeave={e => { e.currentTarget.style.background = M.glassBg; e.currentTarget.style.borderColor = M.glassBdr; e.currentTarget.style.color = M.mid; e.currentTarget.style.boxShadow = "0 0 0 0.5px rgba(0,255,65,0.12), 0 8px 24px rgba(0,0,0,0.4)"; }}
+            >
+              Full CV ↓
             </a>
             </div>
           </FadeIn>
