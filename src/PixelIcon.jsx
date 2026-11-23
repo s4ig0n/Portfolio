@@ -9,6 +9,7 @@ import trophy from "pixelarticons/svg/trophy.svg?raw";
 import bookOpen from "pixelarticons/svg/book-open.svg?raw";
 import users from "pixelarticons/svg/users.svg?raw";
 import bullseye from "pixelarticons/svg/bullseye.svg?raw";
+import monitor from "pixelarticons/svg/monitor.svg?raw";
 
 const ICONS = {
   "lock": lock,
@@ -20,6 +21,7 @@ const ICONS = {
   "book-open": bookOpen,
   "users": users,
   "bullseye": bullseye,
+  "monitor": monitor,
 };
 
 const inner = (svg) => svg.replace(/^[\s\S]*?<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");

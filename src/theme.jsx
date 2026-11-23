@@ -381,6 +381,12 @@ export const SITE_CSS = `
         @media (max-width: 760px) { .about-split { grid-template-columns: 1fr; } }
         .about-term-row { display: grid; grid-template-columns: 96px 1fr; gap: 10px; }
         @media (max-width: 600px) { .about-term-row { grid-template-columns: 1fr; gap: 0; margin-bottom: 6px; } }
+        .stack-row { display: grid; grid-template-columns: 140px 1fr; gap: 8px 20px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.07); }
+        .stack-row:first-child { padding-top: 0; }
+        .stack-row:last-child { border-bottom: none; padding-bottom: 0; }
+        @media (max-width: 600px) { .stack-row { grid-template-columns: 1fr; } }
+        .banner-eyebrow.one-line { white-space: nowrap; margin-bottom: 4px; }
+        @media (max-width: 600px) { .banner-eyebrow.one-line { white-space: normal; } }
         .status-pill {
           display: inline-flex; align-items: center; white-space: nowrap;
           padding: 6px 14px; border-radius: 999px;
@@ -455,6 +461,7 @@ export const SITE_CSS = `
               0 0 14px rgba(0,255,65,0.28);
           }
           .side-nav-dot { display: none; }
+          .side-nav-item.nav-desktop-only { display: none; }
           .side-nav-label, .side-nav-label.active {
             display: block; font-size: 10.5px; letter-spacing: 0; transform: none; opacity: 1;
           }

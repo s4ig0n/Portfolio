@@ -10,12 +10,20 @@ const PROOF = [
   { value: "47", what: "pytest tests against an MQTT device", where: "MQTT harness · found a broker conformance bug" },
   { value: "2 + 2", what: "firmware releases and hotfixes validated", where: "Mercury Security · TestRail · Jenkins · ARM Linux" },
 ];
-const ALL_TECH = ["C", "C++", "Python", "Java", "Bash", "MIPS Assembly", "TypeScript", "SQL", "Embedded Linux", "RISC-V", "PIC24", "AVX2/FMA", "Valgrind", "CMake", "pytest", "GitHub Actions", "Jenkins", "TestRail", "Docker", "QEMU", "MQTT", "Wireshark", "React", "Django"];
+
+// Everything else, grouped so a reader can scan to the area they care about.
+const STACK = [
+  ["Languages", ["C", "C++", "Python", "Java", "Bash", "MIPS Assembly", "TypeScript", "SQL (MySQL, SQLite)", "HTML/CSS"]],
+  ["Systems", ["Cache & memory hierarchy", "SIMD (AVX2, FMA)", "MESI coherence", "RISC-V (xv6)", "Embedded Linux (ARM)", "Windows & WSL", "Valgrind (Lackey, Cachegrind)", "CMake"]],
+  ["Hardware", ["PIC24 (MPLAB X, PICkit 3)", "Arduino", "Raspberry Pi", "RS-485 (OSDP, Wiegand)", "Access control (SIOs, readers, locks)", "Oscilloscope", "Circuit debugger", "Schematic reading", "Relay circuits"]],
+  ["Networking", ["MQTT", "TCP/IP", "HTTP", "DNS", "TLS", "JSON messaging", "Wireshark", "Docker", "QEMU"]],
+  ["Test & DevOps", ["pytest", "GitHub Actions", "Jenkins", "TestRail", "SonarQube", "Jira", "Bitbucket", "Grafana"]],
+  ["Web & Tools", ["React", "Next.js", "Django", "Bootstrap", "Vite", "Vitest", "Git", "Linux", "VS Code", "LaTeX"]],
+];
 
 export default function Skills() {
   return (
     <>
-      <p style={{ ...mono, fontSize: "11px", letterSpacing: "3px", color: M.mid, textTransform: "uppercase", marginBottom: "16px" }}>Real numbers. Real work.</p>
       <div className="grid-2" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))" }}>
         {PROOF.map((p, i) => (
           <FadeIn key={p.value} delay={0.05 * i}>
@@ -28,8 +36,14 @@ export default function Skills() {
         ))}
       </div>
       <FadeIn delay={0.2}>
-        <p style={{ ...mono, fontSize: "11px", letterSpacing: "3px", color: M.mid, textTransform: "uppercase", margin: "40px 0 12px" }}>Technologies</p>
-        <Tags items={ALL_TECH} />
+        <div style={{ marginTop: "40px" }}>
+          {STACK.map(([group, items]) => (
+            <div key={group} className="stack-row">
+              <span style={{ ...mono, fontSize: "11px", letterSpacing: "2px", color: M.mid, textTransform: "uppercase" }}>{group}</span>
+              <Tags items={items} />
+            </div>
+          ))}
+        </div>
       </FadeIn>
     </>
   );
